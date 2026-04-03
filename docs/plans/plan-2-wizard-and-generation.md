@@ -1,6 +1,6 @@
 # Plan 2: Wizard & Document Generation
 
-**Goal:** Build the AI-powered wizard flow that takes a user from "I have a problem" to a generated legal document stored in Supabase — covering both the free-text and category-browse entry points.
+**Goal:** Build the AI-powered four-step wizard flow (Defendant → Claimant → Incident → Evidence) that takes a user from "I have a problem" to a generated legal document stored in Supabase.
 
 **Architecture:** A four-step wizard guides the user through Defendant → Claimant → Incident → Evidence. Jurisdiction is inferred from the location (city, state) entered in the Incident step — there is no separate state picker. Claude enhances the user's free-text description live during step 3. On step 4, evidence files are uploaded to Supabase Storage. Clicking "Generate Demand Letter" calls a Next.js API route that sends wizard answers + evidence context to the Claude API, which fills a document template. The generated document is stored in Supabase (as an anonymous row if not yet signed in, or as a user-owned row if logged in).
 
