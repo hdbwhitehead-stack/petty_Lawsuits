@@ -116,12 +116,14 @@
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     anonymous_key TEXT,              -- localStorage UUID for pre-auth docs
-    state TEXT NOT NULL,             -- AU state/territory (NSW, VIC, etc.)
-    category TEXT NOT NULL,          -- document category
+    state TEXT,                      -- AU state/territory (NSW, VIC, etc.) — inferred from location, may be null until generation
+    category TEXT NOT NULL,          -- document category / claim type
     status TEXT NOT NULL DEFAULT 'generating',  -- generating | ready | failed | permanently_failed
     original_content JSONB,          -- Claude-generated field values (never overwritten)
     current_content JSONB,           -- User's current edits (overwritten on save)
+    evidence_files JSONB DEFAULT '[]',  -- Array of { path, name, size } for Supabase Storage refs
     unlocked BOOLEAN DEFAULT FALSE,
+    unlock_tier TEXT,                -- 'send' | 'full_petty' | 'subscription' — set at payment time
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
   );
@@ -161,6 +163,7 @@
   ```
 - [ ] In Supabase dashboard → SQL Editor, paste and run this migration
 - [ ] Verify the three tables appear in Table Editor
+- [ ] In Supabase dashboard → Storage, create two private buckets: `documents` (for generated PDF/Word exports) and `evidence` (for user-uploaded evidence files)
 - [ ] Commit: `git add -A && git commit -m "feat: add initial database schema"`
 
 ---
