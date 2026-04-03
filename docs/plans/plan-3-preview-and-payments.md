@@ -2,7 +2,7 @@
 
 **Goal:** Build the document preview (server-side redacted), Stripe payment flow, and document unlock logic — so users can see what they're buying and pay to unlock the full document.
 
-**Architecture:** The preview API serves only the first section (≥150 words) of a document; the rest is replaced server-side before reaching the browser. Stripe Checkout handles payment. A webhook updates the document's `unlocked` flag in Supabase. Supabase Realtime notifies the frontend when the unlock is confirmed.
+**Architecture:** After generation, the wizard navigates to `/preview/[documentId]`. The preview page serves only the first section (≥150 words) of a document; the rest is replaced server-side before reaching the browser. A modal overlay sits on top of the preview presenting two unlock tiers (Send the Letter ~$29 / Go Full Petty ~$49). Stripe Checkout handles payment. A webhook updates the document's `unlocked` flag in Supabase. Supabase Realtime notifies the frontend when the unlock is confirmed.
 
 **Tech Stack:** Stripe, Supabase Realtime, Next.js API routes, Resend
 
@@ -27,9 +27,10 @@ app/
             └── route.ts                 # POST: handle Stripe webhook events
 components/
 └── payment/
-    ├── PreviewGate.tsx                  # Blurred/redacted preview + unlock CTA
-    ├── UnlockButton.tsx                 # Pay-per-doc button
-    └── SubscribeButton.tsx              # Subscription button
+    ├── PreviewShell.tsx                 # Renders redacted document content
+    ├── UnlockModal.tsx                  # Modal overlay with two pricing tiers side-by-side
+    ├── UnlockTierCard.tsx               # Reusable card for a single tier (Send / Full Petty)
+    └── SubscribeButton.tsx              # Subscription option (if surfaced from modal)
 lib/
 ├── stripe/
 │   ├── client.ts                        # Stripe SDK instance
@@ -52,13 +53,15 @@ lib/
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
   STRIPE_WEBHOOK_SECRET=whsec_...   (get this in Task 4)
   ```
-- [ ] In Stripe dashboard → Products, create two products:
-  - **Document Unlock** — one-time price of AUD $19 (adjust as desired)
-  - **Monthly Subscription** — recurring price of AUD $39/month
-- [ ] Note the Price IDs for both (format: `price_...`)
+- [ ] In Stripe dashboard → Products, create three products:
+  - **Send the Letter** — one-time price of AUD $29
+  - **Go Full Petty** — one-time price of AUD $49
+  - **Monthly Subscription** — recurring price (TBD, ~AUD $49–79/month)
+- [ ] Note the Price IDs for all three (format: `price_...`)
 - [ ] Add to `.env.local`:
   ```
-  STRIPE_UNLOCK_PRICE_ID=price_...
+  STRIPE_SEND_PRICE_ID=price_...
+  STRIPE_FULL_PETTY_PRICE_ID=price_...
   STRIPE_SUBSCRIPTION_PRICE_ID=price_...
   ```
 - [ ] Create `lib/stripe/client.ts`:
@@ -110,17 +113,27 @@ lib/
 
 ---
 
-### Task 3: Preview page
+### Task 3: Preview page + unlock modal
 
 - [ ] Create `app/preview/[documentId]/page.tsx` as a server component:
   - Fetch the document from Supabase
   - If `unlocked`, redirect to `/document/[documentId]`
   - If not, redact `current_content` using `redactContent()`
-  - Render the redacted fields with the unlock CTA below
+  - Render `PreviewShell` with redacted content, and `UnlockModal` as an overlay
   - The full content is never sent to the browser
-- [ ] Create `components/payment/PreviewGate.tsx` — renders the redacted document fields and the unlock buttons
-- [ ] Run the dev server and verify: after completing the wizard, you land on the preview page and only partial content is visible
-- [ ] Commit: `git add -A && git commit -m "feat: add document preview page with server-side redaction"`
+- [ ] Create `components/payment/PreviewShell.tsx` — renders the redacted demand letter in a document-style layout (letterhead area, body text with redacted sections shown as solid blocks)
+- [ ] Create `components/payment/UnlockModal.tsx` — a modal overlay that appears on top of the preview and cannot be dismissed without action. Contains:
+  - Heading: "Your Letter Is Ready"
+  - Brief summary: target recipient name, what's included
+  - Two `UnlockTierCard` components side by side
+  - "Review Draft Mode" option (future feature placeholder — disable for MVP)
+- [ ] Create `components/payment/UnlockTierCard.tsx` — renders a single tier card with:
+  - Tier name ("Send the Letter" / "Go Full Petty")
+  - Price
+  - Feature list
+  - CTA button that triggers checkout for that tier's price ID
+- [ ] Run the dev server and verify: after completing the wizard, you land on the preview page with the modal visible and only partial content visible behind it
+- [ ] Commit: `git add -A && git commit -m "feat: add document preview page with unlock modal"`
 
 ---
 
@@ -133,22 +146,25 @@ lib/
   import { stripe } from '@/lib/stripe/client'
 
   export async function POST(req: NextRequest) {
-    const { documentId, type } = await req.json() // type: 'unlock' | 'subscription'
+    // type: 'send' | 'full_petty' | 'subscription'
+    const { documentId, type } = await req.json()
 
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
-    const priceId = type === 'subscription'
-      ? process.env.STRIPE_SUBSCRIPTION_PRICE_ID!
-      : process.env.STRIPE_UNLOCK_PRICE_ID!
+    const priceId =
+      type === 'subscription'  ? process.env.STRIPE_SUBSCRIPTION_PRICE_ID! :
+      type === 'full_petty'    ? process.env.STRIPE_FULL_PETTY_PRICE_ID! :
+                                 process.env.STRIPE_SEND_PRICE_ID!
 
     const session = await stripe.checkout.sessions.create({
       mode: type === 'subscription' ? 'subscription' : 'payment',
+      currency: 'aud',
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/preview/${documentId}?payment=success`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/preview/${documentId}`,
-      metadata: { documentId, userId: user.id, type },
+      metadata: { documentId, userId: user.id, type }, // type: 'send' | 'full_petty' | 'subscription'
       customer_email: user.email,
     })
 
@@ -156,7 +172,7 @@ lib/
   }
   ```
 - [ ] Add `NEXT_PUBLIC_APP_URL=http://localhost:3000` to `.env.local`
-- [ ] Create `components/payment/UnlockButton.tsx` — a button that calls `/api/checkout` and redirects to Stripe Checkout
+- [ ] The checkout buttons live inside `UnlockTierCard.tsx` (built in Task 3) — each card's CTA calls `/api/checkout` with its tier type and redirects to Stripe Checkout
 - [ ] Test the payment flow in Stripe test mode using card number `4242 4242 4242 4242`
 - [ ] Commit: `git add -A && git commit -m "feat: add Stripe Checkout flow"`
 
@@ -177,10 +193,11 @@ lib/
     const supabase = createClient()
     const { documentId, userId, type } = session.metadata!
 
-    if (type === 'unlock') {
+    // Both one-off tiers unlock the document
+    if (type === 'send' || type === 'full_petty') {
       await supabase
         .from('documents')
-        .update({ unlocked: true })
+        .update({ unlocked: true, unlock_tier: type })
         .eq('id', documentId)
         .eq('user_id', userId)
     }
@@ -189,7 +206,7 @@ lib/
       // Also unlock the document that triggered the subscription
       await supabase
         .from('documents')
-        .update({ unlocked: true })
+        .update({ unlocked: true, unlock_tier: 'subscription' })
         .eq('id', documentId)
         .eq('user_id', userId)
 
