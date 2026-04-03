@@ -2,7 +2,7 @@
 
 **Goal:** Build the AI-powered wizard flow that takes a user from "I have a problem" to a generated legal document stored in Supabase — covering both the free-text and category-browse entry points.
 
-**Architecture:** A multi-step wizard collects the user's state, situation, and answers to structured questions. The final step calls a Next.js API route that sends the answers to the Claude API, which fills a document template. The generated document is stored in Supabase (as an anonymous row if not yet signed in, or as a user-owned row if logged in). The wizard supports both entry points: free-text description and category browse.
+**Architecture:** A four-step wizard guides the user through Defendant → Claimant → Incident → Evidence. Jurisdiction is inferred from the location (city, state) entered in the Incident step — there is no separate state picker. Claude enhances the user's free-text description live during step 3. On step 4, evidence files are uploaded to Supabase Storage. Clicking "Generate Demand Letter" calls a Next.js API route that sends wizard answers + evidence context to the Claude API, which fills a document template. The generated document is stored in Supabase (as an anonymous row if not yet signed in, or as a user-owned row if logged in).
 
 **Tech Stack:** Claude API (`claude-sonnet-4-6`), Supabase, Next.js API routes, `localStorage` (anonymous key)
 
@@ -19,22 +19,29 @@ app/
 ├── wizard/
 │   └── page.tsx                         # Wizard shell (client component, manages steps)
 └── api/
-    └── generate/
-        └── route.ts                     # POST: calls Claude, validates, saves to Supabase
+    ├── generate/
+    │   └── route.ts                     # POST: calls Claude, validates, saves to Supabase
+    └── enhance/
+        └── route.ts                     # POST: live Claude narrative enhancement (step 3)
 components/
 └── wizard/
-    ├── WizardShell.tsx                  # Step container and progress indicator
-    ├── StateSelector.tsx                # State/territory picker (step 1 — always first)
-    ├── EntryPicker.tsx                  # "Describe situation" vs "Browse categories"
-    ├── SituationInput.tsx               # Free-text situation description
-    ├── CategoryPicker.tsx               # Grid of document categories
-    └── QuestionStep.tsx                 # Generic question step (reused per template)
+    ├── WizardShell.tsx                  # Step container, progress sidebar, % completion
+    ├── ProgressSidebar.tsx              # Left sidebar showing step names, % progress, participant names as entered
+    ├── DefendantStep.tsx                # Step 1: Business/Individual toggle, defendant details
+    ├── ClaimantStep.tsx                 # Step 2: Claimant details + social proof ticker
+    ├── IncidentStep.tsx                 # Step 3: Description, claim type, date, location, amount, court widget
+    ├── CourtWidget.tsx                  # Auto-expands below amount field; determines correct tribunal from location + amount
+    ├── NarrativeEnhancer.tsx            # Calls /api/enhance live as user types; shows enhanced version below input
+    └── EvidenceStep.tsx                 # Step 4: Drag-and-drop upload + requirements checklist
 lib/
 ├── claude/
 │   ├── generate.ts                      # Claude API call + placeholder validation
+│   ├── enhance.ts                       # Live narrative enhancement prompt
 │   └── prompts.ts                       # System prompts and per-category templates
 ├── documents/
-│   └── templates.ts                     # Template definitions: fields, questions per category
+│   ├── templates.ts                     # Template definitions: fields, questions per category
+│   ├── evidence-requirements.ts         # Per-claim-type evidence checklist definitions
+│   └── jurisdiction.ts                  # Parse state from location string; map to tribunal name
 └── anonymous.ts                         # localStorage UUID helpers
 ```
 
@@ -66,10 +73,56 @@ lib/
 
 ---
 
-### Task 2: Document templates
+### Task 2: Document templates and jurisdiction helpers
 
-- [ ] Create `lib/documents/templates.ts` defining the fields and wizard questions for each category:
+- [ ] Create `lib/documents/jurisdiction.ts` that parses a location string (e.g. "Sydney, NSW") to extract the state code, and maps state codes to tribunal names:
   ```ts
+  export const STATE_TRIBUNAL: Record<string, string> = {
+    NSW: 'NCAT (NSW Civil and Administrative Tribunal)',
+    VIC: 'VCAT (Victorian Civil and Administrative Tribunal)',
+    QLD: 'QCAT (Queensland Civil and Administrative Tribunal)',
+    WA:  'SAT (State Administrative Tribunal)',
+    SA:  'SACAT (South Australian Civil and Administrative Tribunal)',
+    TAS: 'TASCAT (Tasmanian Civil and Administrative Tribunal)',
+    ACT: 'ACAT (ACT Civil and Administrative Tribunal)',
+    NT:  'Local Court of the Northern Territory',
+  }
+
+  export function parseStateFromLocation(location: string): string | null {
+    const matches = location.toUpperCase().match(/\b(NSW|VIC|QLD|WA|SA|TAS|ACT|NT)\b/)
+    return matches ? matches[1] : null
+  }
+  ```
+- [ ] Create `lib/documents/evidence-requirements.ts` defining the per-claim-type checklist:
+  ```ts
+  export type EvidenceItem = { key: string; label: string; required: boolean }
+
+  export const EVIDENCE_REQUIREMENTS: Record<string, EvidenceItem[]> = {
+    'consumer-complaint': [
+      { key: 'purchase_receipt', label: 'Purchase Receipt', required: true },
+      { key: 'communication_records', label: 'Communication Records', required: true },
+      { key: 'product_service_docs', label: 'Product/Service Documentation', required: false },
+    ],
+    'bond-dispute': [
+      { key: 'lease_agreement', label: 'Lease Agreement', required: true },
+      { key: 'condition_report', label: 'Ingoing Condition Report', required: false },
+      { key: 'correspondence', label: 'Correspondence with Landlord/Agent', required: true },
+    ],
+    'debt-recovery': [
+      { key: 'invoice_or_agreement', label: 'Invoice or Written Agreement', required: true },
+      { key: 'communication_records', label: 'Communication Records', required: true },
+    ],
+    // Add further categories following the same pattern
+  }
+  ```
+- [ ] Commit: `git add -A && git commit -m "feat: add jurisdiction helpers and evidence requirements"`
+
+- [ ] Create `lib/documents/templates.ts` defining the fields for each document category:
+  ```ts
+  // Templates define the output fields Claude must fill — wizard questions are now
+  // collected via the fixed four-step flow (Defendant / Claimant / Incident / Evidence),
+  // not per-template question lists.
+
   export type DocumentField = {
     key: string
     label: string
@@ -82,7 +135,6 @@ lib/
     label: string
     description: string
     fields: DocumentField[]
-    wizardQuestions: { key: string; question: string; type: 'text' | 'select'; options?: string[] }[]
   }
 
   export const TEMPLATES: DocumentTemplate[] = [
@@ -99,12 +151,6 @@ lib/
         { key: 'payment_deadline', label: 'Deadline to pay', type: 'date' },
         { key: 'payment_details', label: 'Your bank/payment details', type: 'text' },
       ],
-      wizardQuestions: [
-        { key: 'relationship', question: 'What is your relationship to the debtor?', type: 'select',
-          options: ['Individual I lent money to', 'Business I provided services to', 'Former employer', 'Other'] },
-        { key: 'prior_attempts', question: 'Have you already asked them to pay?', type: 'select',
-          options: ['Yes, verbally', 'Yes, by email or message', 'No'] },
-      ]
     },
     {
       id: 'consumer-complaint',
@@ -119,12 +165,6 @@ lib/
         { key: 'amount_paid', label: 'Amount paid (AUD)', type: 'amount' },
         { key: 'remedy_sought', label: 'What remedy do you want? (refund, repair, replacement)', type: 'text' },
       ],
-      wizardQuestions: [
-        { key: 'issue_type', question: 'What is the main issue?', type: 'select',
-          options: ['Product was faulty', 'Service was not as described', 'Service was not completed', 'Other'] },
-        { key: 'contacted_business', question: 'Have you already contacted the business?', type: 'select',
-          options: ['Yes, they refused to help', 'Yes, they ignored me', 'No'] },
-      ]
     },
     {
       id: 'bond-dispute',
@@ -139,11 +179,6 @@ lib/
         { key: 'disputed_amount', label: 'Amount being withheld (AUD)', type: 'amount' },
         { key: 'vacated_date', label: 'Date you vacated', type: 'date' },
       ],
-      wizardQuestions: [
-        { key: 'deduction_reason', question: 'What reason did the landlord give for keeping the bond?', type: 'text' },
-        { key: 'condition_report', question: 'Did you complete an ingoing condition report?', type: 'select',
-          options: ['Yes', 'No', 'Not sure'] },
-      ]
     },
     // Additional templates (Neighbour Disputes, Employment, Contracts, Court filings)
     // follow the same structure — expand as the product grows
@@ -161,37 +196,34 @@ lib/
 
 ### Task 3: Claude prompts
 
-- [ ] Create `lib/claude/prompts.ts`:
+- [ ] Create `lib/claude/prompts.ts`. Note: state is now derived from the `location` string via `parseStateFromLocation()` in `lib/documents/jurisdiction.ts` — it is no longer passed as a separate wizard answer:
   ```ts
   import type { DocumentTemplate } from '@/lib/documents/templates'
-
-  const STATE_TRIBUNAL: Record<string, string> = {
-    NSW: 'NCAT (NSW Civil and Administrative Tribunal)',
-    VIC: 'VCAT (Victorian Civil and Administrative Tribunal)',
-    QLD: 'QCAT (Queensland Civil and Administrative Tribunal)',
-    WA: 'SAT (State Administrative Tribunal)',
-    SA: 'SACAT (South Australian Civil and Administrative Tribunal)',
-    TAS: 'TASCAT (Tasmanian Civil and Administrative Tribunal)',
-    ACT: 'ACAT (ACT Civil and Administrative Tribunal)',
-    NT: 'NTCAT (Northern Territory Civil and Administrative Tribunal)',
-  }
+  import { STATE_TRIBUNAL, parseStateFromLocation } from '@/lib/documents/jurisdiction'
 
   export function buildGenerationPrompt(
     template: DocumentTemplate,
-    state: string,
-    wizardAnswers: Record<string, string>
+    wizardAnswers: Record<string, string>,
+    evidenceFilenames: string[]
   ): string {
+    const location = wizardAnswers.location ?? ''
+    const state = parseStateFromLocation(location) ?? 'Unknown'
     const tribunal = STATE_TRIBUNAL[state] ?? 'the relevant state tribunal'
+
     const answersText = Object.entries(wizardAnswers)
       .map(([k, v]) => `${k}: ${v}`)
       .join('\n')
 
+    const evidenceContext = evidenceFilenames.length > 0
+      ? `\nThe user has attached the following evidence files: ${evidenceFilenames.join(', ')}`
+      : ''
+
     return `You are generating a formal Australian legal document of type: ${template.label}.
 
-The user is in ${state}, Australia. The relevant tribunal in this state is ${tribunal}.
+The user is located at: ${location}. The relevant tribunal in this jurisdiction is ${tribunal}.
 
 User's situation details:
-${answersText}
+${answersText}${evidenceContext}
 
 Generate values for each of the following document fields. Return ONLY a valid JSON object with these exact keys. Do not include any explanation, preamble, or markdown formatting — just the JSON object.
 
@@ -207,7 +239,28 @@ Rules:
 
   export const SYSTEM_PROMPT = `You are a document drafting assistant for an Australian legal document generation service. You produce structured field values for legal document templates. You do not provide legal advice. You produce formal, accurate document content based only on the information provided.`
   ```
-- [ ] Commit: `git add -A && git commit -m "feat: add Claude prompt builders"`
+
+- [ ] Create `lib/claude/enhance.ts` for the live narrative enhancement feature (called from `IncidentStep` as the user types):
+  ```ts
+  import Anthropic from '@anthropic-ai/sdk'
+
+  const client = new Anthropic()
+
+  export async function enhanceNarrative(rawDescription: string): Promise<string> {
+    const message = await client.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 512,
+      system: `You are helping a person write a formal incident description for an Australian legal demand letter.
+Rewrite their description in clear, formal, professional language suitable for a legal document.
+Preserve all facts exactly — do not add, remove, or invent any details.
+Return only the rewritten description, no preamble.`,
+      messages: [{ role: 'user', content: rawDescription }],
+    })
+    return (message.content[0] as { type: string; text: string }).text.trim()
+  }
+  ```
+- [ ] Create `app/api/enhance/route.ts` — a POST endpoint that accepts `{ description: string }` and returns `{ enhanced: string }`. Apply a short debounce note: this route is called client-side with a 1-second debounce to avoid excessive API calls.
+- [ ] Commit: `git add -A && git commit -m "feat: add Claude prompt builders and narrative enhancer"`
 
 ---
 
@@ -225,10 +278,10 @@ Rules:
 
   export async function generateDocument(
     template: DocumentTemplate,
-    state: string,
-    wizardAnswers: Record<string, string>
+    wizardAnswers: Record<string, string>,
+    evidenceFilenames: string[]
   ): Promise<Record<string, string>> {
-    const prompt = buildGenerationPrompt(template, state, wizardAnswers)
+    const prompt = buildGenerationPrompt(template, wizardAnswers, evidenceFilenames)
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
@@ -266,7 +319,10 @@ Rules:
   import { getTemplate } from '@/lib/documents/templates'
 
   export async function POST(req: NextRequest) {
-    const { templateId, state, wizardAnswers, anonymousKey } = await req.json()
+    // wizardAnswers includes all four steps merged: defendant, claimant, incident fields
+    // location field within wizardAnswers is used to infer state/jurisdiction
+    // evidenceFilenames is an array of filenames already uploaded to Supabase Storage
+    const { templateId, wizardAnswers, evidenceFilenames, anonymousKey } = await req.json()
 
     const template = getTemplate(templateId)
     if (!template) {
@@ -294,14 +350,15 @@ Rules:
     }
 
     // Create document row in pending state
+    // state is derived server-side from wizardAnswers.location
     const { data: doc, error: insertError } = await supabase
       .from('documents')
       .insert({
         user_id: user?.id ?? null,
         anonymous_key: user ? null : anonymousKey,
-        state,
         category: template.category,
         status: 'generating',
+        evidence_files: evidenceFilenames ?? [],
       })
       .select()
       .single()
@@ -316,7 +373,7 @@ Rules:
 
     while (attempts < 3) {
       try {
-        content = await generateDocument(template, state, wizardAnswers)
+        content = await generateDocument(template, wizardAnswers, evidenceFilenames ?? [])
         break
       } catch (err) {
         attempts++
@@ -361,15 +418,40 @@ Rules:
 
 ### Task 5: Wizard UI
 
-- [ ] Create `app/wizard/page.tsx` as a client component that manages wizard state (current step, collected answers) and renders the appropriate step component
-- [ ] Create `components/wizard/StateSelector.tsx` — a dropdown or button grid for selecting AU state/territory (always step 1)
-- [ ] Create `components/wizard/EntryPicker.tsx` — two large buttons: "Describe my situation" and "I know what I need"
-- [ ] Create `components/wizard/CategoryPicker.tsx` — a grid of cards, one per document category, that sets the template
-- [ ] Create `components/wizard/QuestionStep.tsx` — renders a single wizard question (text input or select) based on the template's `wizardQuestions`
-- [ ] On the final wizard step, call `/api/generate` and redirect to `/preview/[documentId]` on success
-- [ ] Show a loading state during generation with the message "Generating your document..." and a spinner
-- [ ] Show an error state if generation fails with a "Try again" button
-- [ ] Commit: `git add -A && git commit -m "feat: add wizard UI"`
+- [ ] Create `app/wizard/page.tsx` as a client component that manages wizard state (current step index, collected answers for all four steps) and renders the appropriate step component
+- [ ] Create `components/wizard/ProgressSidebar.tsx` — a persistent left sidebar showing:
+  - Current step name and percentage completion (calculate as `(stepIndex / 4) * 100`)
+  - Defendant name (once entered in step 1)
+  - Claimant name (once entered in step 2)
+  - Claim amount (once entered in step 3)
+- [ ] Create `components/wizard/DefendantStep.tsx` — step 1:
+  - Business / Individual toggle at the top
+  - Fields: First Name, Last Name, Email (optional), Phone (optional), Street Address, City, State, ZIP
+  - CTA: "Lock In The Defendant →"
+- [ ] Create `components/wizard/ClaimantStep.tsx` — step 2:
+  - "Are you filing as: Individual / Business" toggle
+  - Fields: First Name, Last Name, Email, Phone, Street Address, City, State, ZIP
+  - Social proof ticker at the bottom: "The petty is spreading in [City] — demand sent" (static placeholder text for MVP; can be made live later)
+  - CTA: "Continue →"
+- [ ] Create `components/wizard/IncidentStep.tsx` — step 3:
+  - Large textarea for incident description (placeholder: "Describe the incident…")
+  - `NarrativeEnhancer.tsx` component below: calls `/api/enhance` with 1-second debounce; shows enhanced version beneath the raw input once available
+  - "What type of claim is this?" — select dropdown mapped to document categories
+  - "When and where did this happen?" — date picker + location text field (City, State)
+  - "How much are you claiming?" — AUD amount input
+  - `CourtWidget.tsx` — appears below amount field once state + amount are both entered; displays determined court/tribunal name and filing threshold note
+  - Validation checklist at bottom of step (incomplete fields highlighted)
+  - CTA: "Add Your Evidence →"
+- [ ] Create `components/wizard/CourtWidget.tsx` — calls `parseStateFromLocation()` and maps to tribunal; shows a card like "Filing in: NCAT (NSW) — small claims up to $100,000"
+- [ ] Create `components/wizard/EvidenceStep.tsx` — step 4:
+  - Drag-and-drop upload zone (accepts PDF, PNG, JPG, HEIC, DOCX; max 10MB/file, max 10 files)
+  - File list showing uploaded files with remove button
+  - Requirements checklist (from `EVIDENCE_REQUIREMENTS` for selected claim type): each item shows Pending / Uploaded status
+  - "Generate Demand Letter" CTA — disabled until checklist is satisfied or user checks "I've attached what I have"
+- [ ] On clicking "Generate Demand Letter": upload evidence files to Supabase Storage, then call `/api/generate`, then show a loading state ("Generating your document…" with spinner)
+- [ ] On success: navigate to `/preview/[documentId]`
+- [ ] On error: show "Try again" button
+- [ ] Commit: `git add -A && git commit -m "feat: add four-step wizard UI"`
 
 ---
 
