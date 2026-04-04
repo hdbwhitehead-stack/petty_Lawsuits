@@ -14,12 +14,23 @@ type Props = {
 
 export default async function PreviewPage({ params, searchParams }: Props) {
   const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  const { data: doc } = await supabase
+  // Fetch document — anonymous docs are accessible by UUID, owned docs only by their owner
+  const query = supabase
     .from('documents')
     .select('*')
     .eq('id', params.documentId)
-    .single()
+
+  if (user) {
+    // Logged-in: allow their own docs or unclaimed anonymous docs
+    query.or(`user_id.eq.${user.id},user_id.is.null`)
+  } else {
+    // Not logged in: only allow unclaimed anonymous docs
+    query.is('user_id', null)
+  }
+
+  const { data: doc } = await query.single()
 
   if (!doc) {
     return (
@@ -34,13 +45,11 @@ export default async function PreviewPage({ params, searchParams }: Props) {
     redirect(`/document/${doc.id}`)
   }
 
-  // Find the template to get field definitions
   const template = TEMPLATES.find(t => t.category === doc.category) ?? TEMPLATES[0]
-  const disputeType = template.id // template id matches dispute type (e.g. 'debt-recovery')
+  const disputeType = template.id
   const content = doc.current_content as Record<string, string> ?? {}
   const redacted = redactContent(content, template.fields)
 
-  // Try to extract a recipient name from the content
   const recipientName =
     content.debtor_name ?? content.business_name ?? content.landlord_name ?? 'the recipient'
 
@@ -57,7 +66,11 @@ export default async function PreviewPage({ params, searchParams }: Props) {
       {paymentSuccess ? (
         <UnlockWatcher documentId={doc.id} />
       ) : (
-        <UnlockModal documentId={doc.id} recipientName={recipientName} />
+        <UnlockModal
+          documentId={doc.id}
+          recipientName={recipientName}
+          isAuthenticated={!!user}
+        />
       )}
     </div>
   )
