@@ -1,4 +1,5 @@
 'use client'
+import { useCallback } from 'react'
 import { TEMPLATES } from '@/lib/documents/templates'
 import CourtWidget from './CourtWidget'
 import NarrativeEnhancer from './NarrativeEnhancer'
@@ -16,6 +17,14 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
   function handleChange(key: string, value: string) {
     onUpdate({ [key]: value })
   }
+
+  const handleAcceptEnhanced = useCallback((text: string) => {
+    const updates: Record<string, string> = { description: text }
+    if (!answers.original_description) {
+      updates.original_description = answers.description ?? ''
+    }
+    onUpdate(updates)
+  }, [answers.original_description, answers.description, onUpdate])
 
   const hasRequired = answers.description && answers.claim_type && answers.incident_date && answers.location && answers.amount
 
@@ -37,13 +46,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
         />
         <NarrativeEnhancer
           description={answers.description ?? ''}
-          onAccept={(text) => {
-            const updates: Record<string, string> = { description: text }
-            if (!answers.original_description) {
-              updates.original_description = answers.description ?? ''
-            }
-            onUpdate(updates)
-          }}
+          onAccept={handleAcceptEnhanced}
         />
       </div>
 

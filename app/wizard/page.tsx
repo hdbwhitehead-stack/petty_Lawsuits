@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { getOrCreateAnonKey } from '@/lib/anonymous'
 import ProgressSidebar from '@/components/wizard/ProgressSidebar'
@@ -15,11 +15,11 @@ export default function WizardPage() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  function updateAnswers(updates: Record<string, string>) {
+  const updateAnswers = useCallback((updates: Record<string, string>) => {
     setAnswers(prev => ({ ...prev, ...updates }))
-  }
+  }, [])
 
-  async function handleGenerate(files: File[]) {
+  const handleGenerate = useCallback(async (files: File[]) => {
     setLoading(true)
     setError(null)
 
@@ -56,7 +56,7 @@ export default function WizardPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [answers, router])
 
   return (
     <div className="flex min-h-screen bg-[var(--background)]">
