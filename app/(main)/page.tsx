@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { TEMPLATES } from '@/lib/documents/templates'
+import { JurisdictionMap } from '@/components/home/JurisdictionMap'
 
 const STATS = [
   { value: '8', label: 'States & territories covered' },
@@ -178,6 +179,12 @@ export default function HomePage() {
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Email delivery to recipient</li>
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Saved to your account</li>
             </ul>
+            <Link
+              href="/wizard"
+              className="mt-6 block text-center border border-[var(--accent)] text-[var(--accent)] px-6 py-2.5 rounded-full text-base hover:bg-[var(--accent)] hover:text-white transition-colors"
+            >
+              Get started
+            </Link>
           </div>
           <div className="rounded-lg p-8 bg-[var(--card)] relative" style={{ border: '2px solid var(--accent)' }}>
             <span className="absolute -top-3 left-6 text-white text-xs px-3 py-1 rounded-full" style={{ background: 'var(--accent)' }}>Recommended</span>
@@ -191,6 +198,13 @@ export default function HomePage() {
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Certified mail tracking</li>
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Follow-up letter template</li>
             </ul>
+            <Link
+              href="/wizard"
+              className="mt-6 block text-center text-white px-6 py-2.5 rounded-full text-base transition-colors hover:opacity-90"
+              style={{ background: 'var(--accent)' }}
+            >
+              Get started
+            </Link>
           </div>
         </div>
         <div className="text-center mt-10">
@@ -207,23 +221,7 @@ export default function HomePage() {
           <p className="text-[var(--muted)] text-lg mb-10 max-w-xl mx-auto">
             Each document references the correct tribunal, filing thresholds, and legislation for your jurisdiction.
           </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            {[
-              { code: 'NSW', tribunal: 'NCAT' },
-              { code: 'VIC', tribunal: 'VCAT' },
-              { code: 'QLD', tribunal: 'QCAT' },
-              { code: 'WA', tribunal: 'SAT' },
-              { code: 'SA', tribunal: 'SACAT' },
-              { code: 'TAS', tribunal: 'MRT' },
-              { code: 'ACT', tribunal: 'ACAT' },
-              { code: 'NT', tribunal: 'NTCAT' },
-            ].map(j => (
-              <div key={j.code} className="border border-[var(--border)] rounded-lg px-5 py-3 bg-[var(--background)] hover:border-[var(--accent)] transition-colors">
-                <p className="font-bold text-base">{j.code}</p>
-                <p className="text-sm text-[var(--muted)]">{j.tribunal}</p>
-              </div>
-            ))}
-          </div>
+          <JurisdictionMap />
         </div>
       </section>
 
