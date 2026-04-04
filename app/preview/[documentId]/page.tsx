@@ -5,6 +5,7 @@ import { TEMPLATES } from '@/lib/documents/templates'
 import PreviewShell from '@/components/payment/PreviewShell'
 import UnlockModal from '@/components/payment/UnlockModal'
 import UnlockWatcher from './UnlockWatcher'
+import NextStepsPanel from '@/components/document/NextStepsPanel'
 
 type Props = {
   params: { documentId: string }
@@ -35,6 +36,7 @@ export default async function PreviewPage({ params, searchParams }: Props) {
 
   // Find the template to get field definitions
   const template = TEMPLATES.find(t => t.category === doc.category) ?? TEMPLATES[0]
+  const disputeType = template.id // template id matches dispute type (e.g. 'debt-recovery')
   const content = doc.current_content as Record<string, string> ?? {}
   const redacted = redactContent(content, template.fields)
 
@@ -45,8 +47,12 @@ export default async function PreviewPage({ params, searchParams }: Props) {
   const paymentSuccess = searchParams.payment === 'success'
 
   return (
-    <div className="relative min-h-screen bg-gray-50 py-10">
+    <div className="relative min-h-screen bg-[var(--background)] py-10">
       <PreviewShell content={redacted} fields={template.fields} category={doc.category} />
+
+      <div className="max-w-2xl mx-auto mt-8 px-6">
+        <NextStepsPanel state={doc.state} disputeType={disputeType} />
+      </div>
 
       {paymentSuccess ? (
         <UnlockWatcher documentId={doc.id} />

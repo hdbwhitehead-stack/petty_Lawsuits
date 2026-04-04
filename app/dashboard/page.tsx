@@ -1,19 +1,113 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
+
+const STATUS_STYLES: Record<string, string> = {
+  ready: 'bg-green-50 text-green-700 border-green-200',
+  generating: 'bg-[var(--accent-light)] text-[var(--accent)] border-[var(--accent)]',
+  failed: 'bg-red-50 text-red-600 border-red-200',
+  permanently_failed: 'bg-red-50 text-red-600 border-red-200',
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  ready: 'Ready',
+  generating: 'Generating',
+  failed: 'Failed',
+  permanently_failed: 'Failed',
+}
+
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString('en-AU', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+}
 
 export default async function DashboardPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const { data: documents } = await supabase
+    .from('documents')
+    .select('id, state, category, status, unlocked, created_at')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+
+  const docs = documents ?? []
+
   return (
-    <main className="max-w-4xl mx-auto mt-10 p-6">
-      <h1 className="text-2xl font-bold mb-2">Your documents</h1>
-      <p className="text-gray-500 mb-8">You have no documents yet.</p>
-      <a href="/wizard"
-        className="bg-black text-white rounded px-4 py-2 inline-block">
-        Create a document
-      </a>
+    <main className="max-w-4xl mx-auto px-6 py-20 md:py-24">
+      <h1 className="text-3xl md:text-4xl mb-2">Your documents</h1>
+      <p className="text-base text-[var(--muted)] mb-10">
+        Manage and access all your generated legal documents.
+      </p>
+
+      {docs.length === 0 ? (
+        <div className="border border-[var(--border)] rounded-lg p-10 md:p-14 bg-[var(--card)] text-center">
+          <p className="text-lg mb-2">No documents yet</p>
+          <p className="text-base text-[var(--muted)] mb-8">
+            Create your first demand letter or complaint in a few minutes.
+          </p>
+          <Link
+            href="/wizard"
+            className="inline-block bg-[var(--foreground)] text-white text-base font-medium rounded-full px-8 py-3 hover:opacity-90 transition-opacity"
+          >
+            Create a document
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {docs.map((doc) => {
+            const href = doc.unlocked
+              ? `/document/${doc.id}`
+              : `/preview/${doc.id}`
+
+            return (
+              <Link
+                key={doc.id}
+                href={href}
+                className="block border border-[var(--border)] rounded-lg p-6 bg-[var(--card)] hover:border-[var(--accent)] transition-colors"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-base font-medium text-[var(--foreground)]">
+                      {doc.category}
+                    </p>
+                    <p className="text-sm text-[var(--muted)] mt-1">
+                      {doc.state} &middot; {formatDate(doc.created_at)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {doc.unlocked && (
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/20 font-medium">
+                        Unlocked
+                      </span>
+                    )}
+                    <span
+                      className={`text-xs px-2.5 py-1 rounded-full border font-medium ${
+                        STATUS_STYLES[doc.status] ?? 'bg-gray-50 text-gray-500 border-gray-200'
+                      }`}
+                    >
+                      {STATUS_LABELS[doc.status] ?? doc.status}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+
+          <div className="pt-6 text-center">
+            <Link
+              href="/wizard"
+              className="inline-block bg-[var(--foreground)] text-white text-base font-medium rounded-full px-8 py-3 hover:opacity-90 transition-opacity"
+            >
+              Create another document
+            </Link>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
