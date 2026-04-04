@@ -55,17 +55,36 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
         </select>
       </div>
 
+      <div>
+        <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">When did this happen?</label>
+        <input type="date" value={answers.incident_date ?? ''}
+          onChange={e => handleChange('incident_date', e.target.value)}
+          className={inputClasses} />
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">When did this happen?</label>
-          <input type="date" value={answers.incident_date ?? ''}
-            onChange={e => handleChange('incident_date', e.target.value)}
-            className={inputClasses} />
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">State / Territory</label>
+          <select
+            value={answers.location ?? ''}
+            onChange={e => handleChange('location', e.target.value)}
+            className={inputClasses}
+          >
+            <option value="">Select your state</option>
+            <option value="NSW">New South Wales (NSW)</option>
+            <option value="VIC">Victoria (VIC)</option>
+            <option value="QLD">Queensland (QLD)</option>
+            <option value="WA">Western Australia (WA)</option>
+            <option value="SA">South Australia (SA)</option>
+            <option value="TAS">Tasmania (TAS)</option>
+            <option value="ACT">Australian Capital Territory (ACT)</option>
+            <option value="NT">Northern Territory (NT)</option>
+          </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">Where did this happen? (City, State)</label>
-          <input placeholder="e.g. Sydney, NSW" value={answers.location ?? ''}
-            onChange={e => handleChange('location', e.target.value)}
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">City / Suburb</label>
+          <input placeholder="e.g. Sydney" value={answers.city ?? ''}
+            onChange={e => handleChange('city', e.target.value)}
             className={inputClasses} />
         </div>
       </div>
