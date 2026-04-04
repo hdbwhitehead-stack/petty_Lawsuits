@@ -90,7 +90,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   return (
     <button
       onClick={() => setOpen(!open)}
-      className="w-full text-left border-b border-[var(--border)] py-5"
+      className="w-full text-left border-b border-[var(--border)] py-4"
     >
       <div className="flex items-start justify-between gap-4">
         <h3 className="text-base font-medium font-['DM_Sans']">{q}</h3>
@@ -107,16 +107,16 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 export default function FAQPage() {
   return (
-    <main className="max-w-3xl mx-auto px-6 py-24 md:py-32">
-      <h1 className="text-4xl md:text-5xl text-center mb-6">Frequently Asked Questions</h1>
-      <p className="text-center text-[var(--muted)] text-lg mb-20">
+    <main className="max-w-3xl mx-auto px-6 py-20 md:py-24">
+      <h1 className="text-4xl md:text-5xl text-center mb-4">Frequently Asked Questions</h1>
+      <p className="text-center text-[var(--muted)] text-lg mb-12">
         Everything you need to know about Petty Lawsuits.
       </p>
 
-      <div className="space-y-16">
+      <div className="space-y-10">
         {FAQ_SECTIONS.map(section => (
-          <section key={section.title}>
-            <h2 className="text-xl mb-6">{section.title}</h2>
+          <section key={section.title} className="border border-[var(--border)] rounded-lg bg-[var(--card)] p-6 md:p-8">
+            <h2 className="text-xl mb-4">{section.title}</h2>
             <div>
               {section.items.map(item => (
                 <FAQItem key={item.q} q={item.q} a={item.a} />

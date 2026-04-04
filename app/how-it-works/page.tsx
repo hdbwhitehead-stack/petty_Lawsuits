@@ -63,23 +63,23 @@ const STEPS = [
 
 export default function HowItWorksPage() {
   return (
-    <main className="max-w-3xl mx-auto px-6 py-24 md:py-32">
-      <h1 className="text-4xl md:text-5xl text-center mb-6">How It Works</h1>
-      <p className="text-center text-[var(--muted)] text-lg mb-20 max-w-xl mx-auto">
+    <main className="max-w-3xl mx-auto px-6 py-20 md:py-24">
+      <h1 className="text-4xl md:text-5xl text-center mb-4">How It Works</h1>
+      <p className="text-center text-[var(--muted)] text-lg mb-14 max-w-xl mx-auto">
         From describing your situation to sending your document — here&apos;s what to expect.
       </p>
 
-      <div className="space-y-24">
+      <div className="space-y-14">
         {STEPS.map(step => (
-          <section key={step.num}>
-            <div className="flex items-baseline gap-4 mb-10">
+          <section key={step.num} className="border border-[var(--border)] rounded-lg p-8 bg-[var(--card)]">
+            <div className="flex items-baseline gap-4 mb-6">
               <span className="text-sm font-medium text-[var(--accent)]">{step.num}</span>
               <h2 className="text-2xl md:text-3xl">{step.title}</h2>
             </div>
-            <div className="space-y-8 pl-10">
+            <div className="space-y-5 pl-10">
               {step.sections.map(s => (
-                <div key={s.heading}>
-                  <h3 className="text-base font-medium mb-2 font-['DM_Sans']">{s.heading}</h3>
+                <div key={s.heading} className="border-l-2 border-[var(--border)] pl-5">
+                  <h3 className="text-base font-medium mb-1 font-['DM_Sans']">{s.heading}</h3>
                   <p className="text-base text-[var(--muted)] leading-relaxed">{s.text}</p>
                 </div>
               ))}
@@ -88,9 +88,9 @@ export default function HowItWorksPage() {
         ))}
       </div>
 
-      <div className="text-center mt-24 pt-12 border-t border-[var(--border)]">
-        <h2 className="text-2xl md:text-3xl mb-4">Ready to try it?</h2>
-        <p className="text-[var(--muted)] mb-8">The whole process takes about 5 minutes.</p>
+      <div className="text-center mt-14 pt-10 border-t border-[var(--border)]">
+        <h2 className="text-2xl md:text-3xl mb-3">Ready to try it?</h2>
+        <p className="text-[var(--muted)] mb-6">The whole process takes about 5 minutes.</p>
         <Link
           href="/wizard"
           className="inline-block bg-[var(--foreground)] text-white px-8 py-3.5 rounded-full text-base hover:opacity-90 transition-opacity"
