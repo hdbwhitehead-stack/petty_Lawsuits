@@ -39,7 +39,7 @@ export default function EvidenceStep({ answers, onGenerate, loading, error, onBa
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-medium text-[var(--accent)] mb-2 font-['DM_Sans']">Step 4 of 4</p>
+        <p className="text-sm font-medium text-[var(--accent)] mb-2">Step 4 of 4</p>
         <h2 className="text-2xl">Upload your evidence</h2>
       </div>
 
@@ -50,7 +50,7 @@ export default function EvidenceStep({ answers, onGenerate, loading, error, onBa
         onClick={() => document.getElementById('file-input')?.click()}
       >
         <p className="text-base text-[var(--foreground)]">Drag & drop files here, or click to browse</p>
-        <p className="text-sm text-[var(--muted)] mt-1 font-['DM_Sans']">PDF, PNG, JPG, HEIC, DOCX — max 10MB per file, 10 files total</p>
+        <p className="text-sm text-[var(--muted)] mt-1">PDF, PNG, JPG, HEIC, DOCX — max 10MB per file, 10 files total</p>
         <input
           id="file-input"
           type="file"
@@ -65,8 +65,8 @@ export default function EvidenceStep({ answers, onGenerate, loading, error, onBa
         <ul className="space-y-2">
           {files.map((f, i) => (
             <li key={i} className="flex items-center justify-between border border-[var(--border)] rounded-lg px-4 py-2.5 bg-[var(--card)]">
-              <span className="text-sm text-[var(--foreground)] truncate font-['DM_Sans']">{f.name} ({(f.size / 1024 / 1024).toFixed(1)} MB)</span>
-              <button onClick={() => removeFile(i)} className="text-red-500 text-sm ml-2 font-['DM_Sans'] hover:underline">Remove</button>
+              <span className="text-sm text-[var(--foreground)] truncate">{f.name} ({(f.size / 1024 / 1024).toFixed(1)} MB)</span>
+              <button onClick={() => removeFile(i)} className="text-red-500 text-sm ml-2 hover:underline">Remove</button>
             </li>
           ))}
         </ul>
@@ -77,7 +77,7 @@ export default function EvidenceStep({ answers, onGenerate, loading, error, onBa
           <h3 className="font-medium mb-3 text-base text-[var(--foreground)]">Evidence checklist for {claimType.replace(/-/g, ' ')}:</h3>
           <ul className="space-y-1.5">
             {requirements.map(req => (
-              <li key={req.key} className="text-sm flex items-center gap-2 font-['DM_Sans']">
+              <li key={req.key} className="text-sm flex items-center gap-2">
                 <span className={req.required ? 'text-[var(--accent)]' : 'text-[var(--muted)]'}>
                   {req.required ? '\u25CF' : '\u25CB'}
                 </span>
@@ -89,7 +89,7 @@ export default function EvidenceStep({ answers, onGenerate, loading, error, onBa
         </div>
       )}
 
-      <label className="flex items-center gap-2 text-sm text-[var(--foreground)] font-['DM_Sans']">
+      <label className="flex items-center gap-2 text-sm text-[var(--foreground)]">
         <input
           type="checkbox"
           checked={skipEvidence}
@@ -99,7 +99,7 @@ export default function EvidenceStep({ answers, onGenerate, loading, error, onBa
         I&apos;ve attached what I have
       </label>
 
-      {error && <p className="text-red-600 text-sm font-['DM_Sans']">{error}</p>}
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
       <div className="flex gap-3">
         {onBack && (

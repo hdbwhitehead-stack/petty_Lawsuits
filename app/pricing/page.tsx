@@ -85,7 +85,7 @@ export default function PricingPage() {
               </span>
             )}
             <h2 className="text-2xl mb-1">{tier.name}</h2>
-            <p className="text-4xl font-['DM_Sans'] font-bold mt-3">{tier.price}</p>
+            <p className="text-4xl font-bold mt-3">{tier.price}</p>
             <p className="text-sm text-[var(--muted)] mb-6">one-time payment</p>
             <ul className="space-y-3 mb-8">
               {tier.features.map(f => (
@@ -112,9 +112,9 @@ export default function PricingPage() {
       {/* Comparison table */}
       <div className="max-w-2xl mx-auto mt-12 border border-[var(--border)] rounded-lg bg-[var(--card)] overflow-hidden">
         <div className="grid grid-cols-3 border-b border-[var(--border)] bg-[var(--background)]">
-          <div className="p-4 text-base font-medium font-['DM_Sans']">Feature</div>
-          <div className="p-4 text-base font-medium font-['DM_Sans'] text-center">Send the Letter</div>
-          <div className="p-4 text-base font-medium font-['DM_Sans'] text-center">Go Full Petty</div>
+          <div className="p-4 text-base font-medium">Feature</div>
+          <div className="p-4 text-base font-medium text-center">Send the Letter</div>
+          <div className="p-4 text-base font-medium text-center">Go Full Petty</div>
         </div>
         {COMPARE_FEATURES.map((row, i) => (
           <div key={row.feature} className={`grid grid-cols-3 ${i < COMPARE_FEATURES.length - 1 ? 'border-b border-[var(--border)]' : ''}`}>
@@ -146,7 +146,7 @@ export default function PricingPage() {
         <div className="space-y-6">
           {PRICING_FAQ.map(item => (
             <div key={item.q} className="border-b border-[var(--border)] pb-6">
-              <h3 className="text-base font-medium font-['DM_Sans'] mb-2">{item.q}</h3>
+              <h3 className="text-base font-medium mb-2">{item.q}</h3>
               <p className="text-base text-[var(--muted)] leading-relaxed">{item.a}</p>
             </div>
           ))}

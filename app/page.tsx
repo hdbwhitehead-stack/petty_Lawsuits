@@ -72,7 +72,7 @@ export default function HomePage() {
         <div className="grid grid-cols-3 border border-[var(--border)] rounded-lg bg-[var(--card)] divide-x divide-[var(--border)]">
           {STATS.map(stat => (
             <div key={stat.label} className="py-5 md:py-6 text-center">
-              <p className="text-2xl md:text-3xl font-['DM_Sans'] font-bold">{stat.value}</p>
+              <p className="text-2xl md:text-3xl font-bold">{stat.value}</p>
               <p className="text-sm text-[var(--muted)] mt-1">{stat.label}</p>
             </div>
           ))}
@@ -125,7 +125,7 @@ export default function HomePage() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {USE_CASES.map(uc => (
             <div key={uc.situation} className="border border-[var(--border)] rounded-lg p-6 bg-[var(--card)]">
-              <h3 className="text-lg mb-1 font-['DM_Sans'] font-medium">{uc.situation}</h3>
+              <h3 className="text-lg mb-1 font-medium">{uc.situation}</h3>
               <p className="text-base text-[var(--muted)] leading-relaxed mb-3">{uc.detail}</p>
               <p className="text-sm text-[var(--accent)] font-medium">{uc.document}</p>
             </div>
@@ -169,7 +169,7 @@ export default function HomePage() {
         <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
           <div className="border border-[var(--border)] rounded-lg p-8 bg-[var(--card)]">
             <h3 className="text-xl mb-1">Send the Letter</h3>
-            <p className="text-3xl font-['DM_Sans'] font-bold mt-2">$29</p>
+            <p className="text-3xl font-bold mt-2">$29</p>
             <p className="text-sm text-[var(--muted)] mb-6">one-time payment</p>
             <ul className="space-y-3 text-base">
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Full document access</li>
@@ -181,7 +181,7 @@ export default function HomePage() {
           <div className="border-2 border-[var(--foreground)] rounded-lg p-8 bg-[var(--card)] relative">
             <span className="absolute -top-3 left-6 bg-[var(--foreground)] text-white text-xs px-3 py-1 rounded-full">Recommended</span>
             <h3 className="text-xl mb-1">Go Full Petty</h3>
-            <p className="text-3xl font-['DM_Sans'] font-bold mt-2">$49</p>
+            <p className="text-3xl font-bold mt-2">$49</p>
             <p className="text-sm text-[var(--muted)] mb-6">one-time payment</p>
             <ul className="space-y-3 text-base">
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Everything in Send the Letter</li>
@@ -218,7 +218,7 @@ export default function HomePage() {
               { code: 'NT', tribunal: 'NTCAT' },
             ].map(j => (
               <div key={j.code} className="border border-[var(--border)] rounded-lg px-5 py-3 bg-[var(--background)]">
-                <p className="font-['DM_Sans'] font-bold text-base">{j.code}</p>
+                <p className="font-bold text-base">{j.code}</p>
                 <p className="text-sm text-[var(--muted)]">{j.tribunal}</p>
               </div>
             ))}

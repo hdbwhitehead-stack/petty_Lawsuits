@@ -93,7 +93,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
       className="w-full text-left border-b border-[var(--border)] py-4"
     >
       <div className="flex items-start justify-between gap-4">
-        <h3 className="text-base font-medium font-['DM_Sans']">{q}</h3>
+        <h3 className="text-base font-medium">{q}</h3>
         <span className="text-[var(--muted)] text-lg flex-shrink-0 leading-none mt-0.5">
           {open ? '\u2212' : '+'}
         </span>

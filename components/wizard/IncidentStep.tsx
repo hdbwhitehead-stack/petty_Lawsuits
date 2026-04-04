@@ -22,12 +22,12 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-medium text-[var(--accent)] mb-2 font-['DM_Sans']">Step 3 of 4</p>
+        <p className="text-sm font-medium text-[var(--accent)] mb-2">Step 3 of 4</p>
         <h2 className="text-2xl">What happened?</h2>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">Describe the incident</label>
+        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Describe the incident</label>
         <textarea
           placeholder="Describe the incident..."
           value={answers.description ?? ''}
@@ -42,7 +42,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">What type of claim is this?</label>
+        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">What type of claim is this?</label>
         <select
           value={answers.claim_type ?? ''}
           onChange={e => handleChange('claim_type', e.target.value)}
@@ -56,7 +56,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">When did this happen?</label>
+        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">When did this happen?</label>
         <input type="date" value={answers.incident_date ?? ''}
           onChange={e => handleChange('incident_date', e.target.value)}
           className={inputClasses} />
@@ -64,7 +64,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">State / Territory</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">State / Territory</label>
           <select
             value={answers.location ?? ''}
             onChange={e => handleChange('location', e.target.value)}
@@ -82,7 +82,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">City / Suburb</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">City / Suburb</label>
           <input placeholder="e.g. Sydney" value={answers.city ?? ''}
             onChange={e => handleChange('city', e.target.value)}
             className={inputClasses} />
@@ -90,7 +90,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">How much are you claiming? (AUD)</label>
+        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">How much are you claiming? (AUD)</label>
         <input placeholder="e.g. 5000" value={answers.amount ?? ''}
           onChange={e => handleChange('amount', e.target.value)}
           className={inputClasses} type="text" inputMode="decimal" />
@@ -99,7 +99,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
       <CourtWidget location={answers.location ?? ''} amount={answers.amount ?? ''} disputeType={answers.claim_type} />
 
       {!hasRequired && (
-        <p className="text-sm text-red-500 font-['DM_Sans']">Please complete all fields above to continue.</p>
+        <p className="text-sm text-red-500">Please complete all fields above to continue.</p>
       )}
 
       <div className="flex gap-3">

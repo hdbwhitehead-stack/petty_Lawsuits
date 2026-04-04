@@ -64,7 +64,7 @@ export default function DocumentsPage() {
       </p>
 
       {/* Available now */}
-      <h2 className="text-xl font-['DM_Sans'] font-medium mb-4 flex items-center gap-3">
+      <h2 className="text-xl font-medium mb-4 flex items-center gap-3">
         <span className="inline-block w-2 h-2 rounded-full bg-[var(--accent)]" />
         Available now
       </h2>
@@ -101,7 +101,7 @@ export default function DocumentsPage() {
       </div>
 
       {/* Coming soon */}
-      <h2 className="text-xl font-['DM_Sans'] font-medium mb-4 flex items-center gap-3 text-[var(--muted)]">
+      <h2 className="text-xl font-medium mb-4 flex items-center gap-3 text-[var(--muted)]">
         <span className="inline-block w-2 h-2 rounded-full bg-[var(--border)]" />
         Coming soon
       </h2>

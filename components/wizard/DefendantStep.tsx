@@ -19,7 +19,7 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-medium text-[var(--accent)] mb-2 font-['DM_Sans']">Step 1 of 4</p>
+        <p className="text-sm font-medium text-[var(--accent)] mb-2">Step 1 of 4</p>
         <h2 className="text-2xl">Who are you making a claim against?</h2>
       </div>
 
@@ -41,7 +41,7 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
 
       {type === 'business' && (
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">Business name</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Business name</label>
           <input
             placeholder="Business name"
             value={answers.defendant_business_name ?? ''}
@@ -53,13 +53,13 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">First name</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">First name</label>
           <input placeholder="First name" value={answers.defendant_first_name ?? ''}
             onChange={e => handleChange('defendant_first_name', e.target.value)}
             className={inputClasses} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">Last name</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Last name</label>
           <input placeholder="Last name" value={answers.defendant_last_name ?? ''}
             onChange={e => handleChange('defendant_last_name', e.target.value)}
             className={inputClasses} />
@@ -68,13 +68,13 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">Email (optional)</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Email (optional)</label>
           <input placeholder="Email (optional)" value={answers.defendant_email ?? ''}
             onChange={e => handleChange('defendant_email', e.target.value)}
             className={inputClasses} type="email" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">Phone (optional)</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Phone (optional)</label>
           <input placeholder="Phone (optional)" value={answers.defendant_phone ?? ''}
             onChange={e => handleChange('defendant_phone', e.target.value)}
             className={inputClasses} type="tel" />
@@ -82,7 +82,7 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">Street address</label>
+        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Street address</label>
         <input placeholder="Street address" value={answers.defendant_address ?? ''}
           onChange={e => handleChange('defendant_address', e.target.value)}
           className={inputClasses} />
@@ -90,19 +90,19 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">City</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">City</label>
           <input placeholder="City" value={answers.defendant_city ?? ''}
             onChange={e => handleChange('defendant_city', e.target.value)}
             className={inputClasses} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">State</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">State</label>
           <input placeholder="State" value={answers.defendant_state ?? ''}
             onChange={e => handleChange('defendant_state', e.target.value)}
             className={inputClasses} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1 font-['DM_Sans']">Postcode</label>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Postcode</label>
           <input placeholder="Postcode" value={answers.defendant_postcode ?? ''}
             onChange={e => handleChange('defendant_postcode', e.target.value)}
             className={inputClasses} />

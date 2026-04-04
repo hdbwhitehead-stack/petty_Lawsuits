@@ -20,9 +20,7 @@ body {
   font-family: 'DM Sans', sans-serif;
 }
 
-h1, h2, h3 {
-  font-family: 'Instrument Serif', serif;
-}
+/* Instrument Serif reserved for brand logo only — applied via inline class */
 
 @layer utilities {
   .text-balance {

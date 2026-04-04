@@ -26,7 +26,7 @@ export default function ProgressSidebar({ currentStep, answers, onStepClick }: P
           <li
             key={step}
             onClick={() => i <= currentStep && onStepClick(i)}
-            className={`text-sm font-['DM_Sans'] flex items-center gap-2 ${
+            className={`text-sm flex items-center gap-2 ${
               i < currentStep
                 ? 'text-[var(--accent)] cursor-pointer hover:underline'
                 : i === currentStep
@@ -48,7 +48,7 @@ export default function ProgressSidebar({ currentStep, answers, onStepClick }: P
         ))}
       </ol>
 
-      <div className="mt-8 space-y-2 text-sm text-[var(--muted)] font-['DM_Sans']">
+      <div className="mt-8 space-y-2 text-sm text-[var(--muted)]">
         {answers.defendant_first_name && (
           <p>Defendant: {answers.defendant_first_name} {answers.defendant_last_name}</p>
         )}
