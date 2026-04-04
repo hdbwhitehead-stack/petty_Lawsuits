@@ -443,4 +443,193 @@ When the user enters "Date of incident" or "Date payment was due":
 
 ---
 
-*Phase 2 complete. Phase 3 (Licensing Boundaries) begins next.*
+*Phase 2 complete.*
+
+---
+
+## Phase 3: Licensing Boundaries (What We Can & Can't Do)
+
+### 3.1 The Legal Framework
+
+The governing legislation is the **Legal Profession Uniform Law (NSW)**, specifically:
+
+- **Section 10** — Prohibition on engaging in legal practice by unqualified entities. Penalty: 250 penalty units (~$27,500) or 2 years imprisonment, or both.
+- **Section 11** — Prohibition on representing that an unqualified entity is entitled to engage in legal practice.
+- **Section 6** — Definitions: "engage in legal practice" includes "practise law" or "provide legal services." "Legal services" means work done, or business transacted, in the ordinary course of legal practice.
+
+There is no statutory definition of "legal practice" itself — the boundaries are defined by case law.
+
+### 3.2 The Key Test: Cornall v Nagle
+
+The foundational test comes from *Cornall v Nagle* [1995] 2 VR 188 (Supreme Court of Victoria, widely applied across Australia):
+
+> Legal practice is "doing something which, in order that the public might be adequately protected, is required to be done only by those who have the necessary training and expertise in the law."
+
+The court further held that "the giving of legal advice, at least as part of a course of conduct and for reward, can properly be said to lie at or near the very centre of the practice of the law."
+
+### 3.3 The Critical Distinction: Where the Line Falls
+
+Based on the case law, Law Society guidance, and academic analysis, the distinction breaks down as follows:
+
+#### NOT legal practice (we CAN do this):
+
+| Activity | Why it's permitted |
+|----------|-------------------|
+| **Providing general legal information** | Explaining what the law says in general terms (e.g. "Under the ACL, goods must be of acceptable quality") is information, not advice |
+| **Providing template documents** | Selling or providing blank/standard-form templates for users to fill in themselves |
+| **Clerical document preparation** | "Filling blanks in a printed form or preparing documents of a general type without determining the legal effect of facts" (Law Society guidance) |
+| **Collecting facts via structured forms** | Asking users to input their own information through a wizard — we're not analysing the legal significance of those facts |
+| **Auto-inserting statutory references based on category** | If the user selects "defective goods," we reference ACL s54–57. This is mechanical categorisation, not legal analysis |
+| **Calculating deadlines and limitation periods** | Mathematical/date calculations based on user inputs — this is information, not advice |
+| **Providing information about processes** | Explaining how NCAT works, what the filing process is, what evidence helps — this is general information |
+
+#### IS legal practice (we MUST NOT do this):
+
+| Activity | Why it crosses the line |
+|----------|----------------------|
+| **Advising on the merits of a claim** | "You have a strong case" or "You should sue" = legal advice about a specific situation |
+| **Recommending a legal strategy** | "You should file with NCAT rather than Local Court" = legal advice |
+| **Tailoring documents based on legal analysis of facts** | If we analyse a user's specific facts to determine which legal provisions apply and craft arguments — that's legal practice |
+| **Guaranteeing outcomes** | "This letter will get your money back" = representing legal expertise |
+| **Representing the user** | Filing on their behalf, corresponding with the other party as their representative |
+| **Drafting court submissions** | Preparing pleadings, affidavits, or legal arguments for court/tribunal proceedings |
+| **Advising on quantum of damages** | "You should claim $X for pain and suffering" = legal advice |
+| **Interpreting contracts** | "Based on clause 7 of your contract, you're entitled to..." = legal analysis |
+
+### 3.4 Where Our AI Wizard Sits — The Grey Zone
+
+This is the most important analysis for our product. Our wizard collects user-supplied facts and generates a letter of demand. The critical question: **does the AI's role in shaping the letter cross from "clerical preparation" into "legal practice"?**
+
+**Arguments that we're in the safe zone:**
+
+1. **User supplies all facts.** We don't investigate or verify — the user tells us what happened, who's involved, and what they want. We structure their inputs into a letter format.
+2. **Category selection is user-driven.** The user chooses "defective goods" — we don't diagnose their legal situation. This is closer to selecting a template than receiving legal advice.
+3. **Statutory references are mechanical.** If category = defective goods → insert ACL s54. No legal judgment required — it's a lookup table.
+4. **We don't advise on merits.** We never say "you have a good case" or "you should proceed."
+5. **The letter template structure is standardised.** Every letter of demand follows the same basic structure. We're formatting, not strategising.
+
+**Arguments that we might be approaching the line:**
+
+1. **AI narrative enhancement.** If the AI rewrites the user's description to make it more "legally effective" — e.g., restructuring their story to emphasise legally relevant facts — this could be seen as applying legal judgment to shape a document.
+2. **Major/minor failure determination.** Walking users through whether their issue is a "major" or "minor" failure is arguably providing guidance that informs their legal rights. However, this is arguably just presenting the statutory test (information) and letting the user decide.
+3. **Remedy suggestion.** If the wizard suggests "based on your answers, you may be entitled to a full refund" — that's getting close to legal advice.
+
+**Our approach (recommended):**
+
+Stay firmly in the "information + structured collection + template generation" zone:
+
+- The AI enhances **writing quality** (grammar, clarity, tone) but does NOT add legal arguments or reframe facts for legal effect
+- The major/minor failure flow presents the **statutory test questions** and lets the **user** determine which applies — we don't make the determination
+- For remedies, we present **all available options** with general information about when each applies, and the **user selects** their preferred remedy
+- Every generated document includes a clear disclaimer (see 3.6)
+- We never use language like "we recommend," "you should," "your claim is strong/weak"
+
+### 3.5 How Competitors Position Themselves
+
+| Platform | Model | Disclaimer approach |
+|----------|-------|-------------------|
+| **Lawpath** | Operates with an incorporated legal practice (Lawpath Legal) for lawyer services, but the platform itself disclaims: "Lawpath is not a law firm, is not engaging in legal practice and does not offer any legal services." Templates and documents are "general in nature." Users can separately engage actual lawyers through the platform. |
+| **LegalVision** | Operates as an actual law firm (incorporated legal practice). Lawyers review and draft documents. Subscription model. This is a fundamentally different model — they ARE engaging in legal practice, with qualified practitioners. |
+| **LawDepot / Genie AI** | Template-only services. User fills in blanks. Disclaimers state templates are "general in nature" and "do not constitute legal advice." No legal analysis applied. |
+| **NSW Legal Aid templates** | Government-provided free templates. General information only. No personalisation. |
+| **Cleardocs** | Backed by a law firm (Maddocks). Documents generated through structured Q&A. Positioned as document generation, with lawyer review available. |
+
+**Key insight:** Lawpath's dual structure is the most instructive for us. The platform itself is NOT a law firm and does NOT provide legal services — it provides templates, information, and a marketplace to connect users with actual lawyers. The document generation is explicitly disclaimed as not being legal advice. This is the model we should follow.
+
+### 3.6 Required Disclaimers
+
+Based on competitor analysis and legal requirements, we need disclaimers in at least four places:
+
+**1. Website footer / Terms of Service:**
+> Petty Lawsuits is not a law firm and does not provide legal advice or legal services. The information and documents generated through this platform are general in nature and are provided for informational purposes only. They do not constitute legal advice, and no solicitor-client relationship is created by using this service. You should obtain independent legal advice before making any decisions about your legal rights or obligations.
+
+**2. Every generated document (footer or cover page):**
+> This document was generated using Petty Lawsuits (pettylawsuits.com.au) based on information provided by the user. It does not constitute legal advice. The recipient should seek independent legal advice if they are uncertain about their legal rights or obligations.
+
+**3. Wizard flow (before generation):**
+> Important: Petty Lawsuits helps you create documents based on the information you provide. We do not review your situation, assess the strength of your claim, or provide legal advice. If you're unsure about your legal rights, consider consulting a lawyer. You can find free or low-cost legal help through [NSW Legal Aid / Law Access NSW / Justice Connect].
+
+**4. In-app prompts at key decision points:**
+> Where the user is making choices that have legal significance (e.g., choosing a remedy, deciding whether the failure is "major"), we should display a brief note: "This information is provided to help you understand your options. It is not legal advice. If you're unsure which option applies to your situation, consider seeking legal advice."
+
+### 3.7 Things We Must NEVER Do
+
+This is the hard "no" list — non-negotiable compliance boundaries:
+
+1. **Never advise on the merits of a claim.** No "you have a strong case," no "this is unlikely to succeed," no assessment of whether the user should proceed.
+2. **Never recommend a legal strategy.** No "you should file with NCAT," no "consider mediation first," no "you might want to include X claim."
+3. **Never guarantee outcomes.** No "this letter will get your money back," no success rates, no implied guarantees.
+4. **Never represent the user.** We don't send letters on behalf of the user as their representative. If we offer a "send it for you" service, it must be purely a delivery/postal service — we're a mail carrier, not a representative.
+5. **Never draft court submissions.** Statements of claim, affidavits, and NCAT applications are court documents. Generating these (as opposed to helping users understand what fields to fill in) likely crosses the line. The NCAT pre-fill feature should populate fields, not draft legal arguments.
+6. **Never interpret contracts.** We can ask users "do you have a contract?" but we can't read it and tell them what it means.
+7. **Never hold ourselves out as lawyers.** No "our legal team," no "our experts," no language implying legal qualifications.
+8. **Never use the word "advice" in relation to what we provide.** Always "information," "guidance," or "tools."
+
+### 3.8 Things We CAN Do (The Green Zone)
+
+1. **Provide general legal information.** Explain what the ACL says, what NCAT does, what a letter of demand is, what the limitation periods are.
+2. **Collect user-supplied facts through structured forms.** This is the core of the wizard.
+3. **Generate documents from templates populated with user facts.** The letter is a templated structure filled with the user's inputs.
+4. **Improve writing quality.** The AI can fix grammar, improve clarity, and ensure a professional tone — as long as it's not reframing facts for legal advantage.
+5. **Auto-insert correct statutory references.** Based on the user's selected category, insert the relevant legislation. This is a lookup, not analysis.
+6. **Calculate deadlines and limitation periods.** Date math based on user inputs.
+7. **Provide checklists and process guides.** "Here's what evidence helps in this type of claim" is information, not advice.
+8. **Offer a postal delivery service.** Physically sending the user's letter by registered post is a delivery service, not a legal service.
+9. **Link users to free legal resources.** NSW Legal Aid, Law Access NSW, Community Legal Centres, Justice Connect.
+10. **Show NCAT/court form field mappings.** "Here are the fields on the NCAT form and what your wizard answers map to" is information.
+
+### 3.9 The "Send It For You" Feature — Compliance Analysis
+
+If we offer a premium feature to physically send the letter by registered post on behalf of the user:
+
+- **This is a postal/delivery service, not a legal service.** We're acting as a mail carrier. The user authors the letter; we post it.
+- **The letter should come FROM the user, not from Petty Lawsuits.** The sender details on the letter are the user's name and address. We're just the mechanism of delivery.
+- **We should NOT include any Petty Lawsuits branding on the actual letter.** The letter should look like it came directly from the user. Our branding on the letter could imply we're acting as the user's representative.
+- **We CAN include a tracking confirmation/receipt to the user.** "Your letter was sent by registered post on [date] to [address]. Tracking number: [X]."
+
+### 3.10 AI Enhancement Guardrails
+
+For the AI narrative enhancement feature (Step 3 of wizard), we need specific guardrails:
+
+**The AI SHOULD:**
+- Fix grammar and spelling
+- Improve sentence structure and clarity
+- Ensure professional, neutral tone
+- Remove emotional language or accusations
+- Ensure the description is factual and chronological
+- Add time connectors ("On [date]...", "Subsequently...", "Despite this...")
+
+**The AI SHOULD NOT:**
+- Add legal arguments not present in the user's original description
+- Reframe facts to emphasise legal elements the user didn't mention
+- Insert legal conclusions ("This constitutes a breach of...")
+- Add claims the user didn't make
+- Suggest additional causes of action
+- Use overly legalistic language that implies lawyer involvement
+- Characterise the severity of the issue ("This is a serious breach...")
+
+### 3.11 Risk Assessment
+
+| Risk | Likelihood | Severity | Mitigation |
+|------|-----------|----------|------------|
+| Regulator determines our AI constitutes legal practice | Low–Medium | High | Strong disclaimers, user-driven decisions, no merits assessment, no strategy advice |
+| User relies on our output as legal advice and suffers loss | Medium | Medium | Disclaimers in every touchpoint, links to free legal help, no outcome guarantees |
+| Competitor or lawyer complains to Law Society | Low | Medium | Clear positioning as information/template service, not law firm |
+| User sends a letter that's factually wrong or legally baseless | Medium | Low (for us) | Disclaimer on every document; user is responsible for accuracy of their inputs |
+
+The biggest risk is the AI narrative enhancement feature. If the AI is perceived as applying legal judgment to shape documents, that's the closest we get to the line. The guardrails in 3.10 are designed to keep us on the right side.
+
+### 3.12 Recommended Legal Review
+
+Before launch, we should get a short compliance opinion (1–2 hours of a tech/regulatory lawyer's time) confirming:
+
+1. Our service model (structured form → template generation → user review → download) does not constitute engaging in legal practice under the LPUL
+2. Our disclaimer language is sufficient
+3. The AI enhancement feature, with the guardrails described, stays on the right side of the line
+4. The "send it for you" feature is positioned correctly as a postal service
+
+This should cost $500–$1,000 and would give us significant comfort. Worth doing before going live.
+
+---
+
+*Phase 3 complete. Phase 4 (Competitive Landscape & Positioning) begins next.*
