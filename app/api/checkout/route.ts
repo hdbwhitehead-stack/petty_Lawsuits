@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { stripe } from '@/lib/stripe/client'
+import { getStripe } from '@/lib/stripe/client'
 
 export async function POST(req: NextRequest) {
   const { documentId, type } = await req.json()
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     type === 'full_petty'    ? process.env.STRIPE_FULL_PETTY_PRICE_ID! :
                                process.env.STRIPE_SEND_PRICE_ID!
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: type === 'subscription' ? 'subscription' : 'payment',
     currency: 'aud',
     line_items: [{ price: priceId, quantity: 1 }],
