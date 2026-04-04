@@ -49,12 +49,12 @@ export default function HomePage() {
             <div key={step.num}>
               <p className="text-sm font-medium text-[var(--accent)] mb-3">{step.num}</p>
               <h3 className="text-xl mb-3">{step.title}</h3>
-              <p className="text-[var(--muted)] text-sm leading-relaxed">{step.desc}</p>
+              <p className="text-[var(--muted)] text-base leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>
         <div className="text-center mt-12">
-          <Link href="/how-it-works" className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] underline underline-offset-4 transition-colors">
+          <Link href="/how-it-works" className="text-base text-[var(--muted)] hover:text-[var(--foreground)] underline underline-offset-4 transition-colors">
             Learn more about how it works
           </Link>
         </div>
@@ -72,18 +72,18 @@ export default function HomePage() {
           {TEMPLATES.map(t => (
             <div key={t.id} className="border border-[var(--border)] rounded-lg p-6 bg-[var(--card)] hover:border-[var(--accent)] transition-colors">
               <h3 className="text-lg mb-2">{t.category}</h3>
-              <p className="text-sm text-[var(--muted)] leading-relaxed">{t.description}</p>
+              <p className="text-base text-[var(--muted)] leading-relaxed">{t.description}</p>
             </div>
           ))}
           {['Neighbour Disputes', 'Employment', 'Contracts'].map(cat => (
             <div key={cat} className="border border-[var(--border)] rounded-lg p-6 bg-[var(--card)] opacity-60">
               <h3 className="text-lg mb-2">{cat}</h3>
-              <p className="text-sm text-[var(--muted)]">Coming soon</p>
+              <p className="text-base text-[var(--muted)]">Coming soon</p>
             </div>
           ))}
         </div>
         <div className="text-center mt-12">
-          <Link href="/documents" className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] underline underline-offset-4 transition-colors">
+          <Link href="/documents" className="text-base text-[var(--muted)] hover:text-[var(--foreground)] underline underline-offset-4 transition-colors">
             See all document types
           </Link>
         </div>
@@ -103,7 +103,7 @@ export default function HomePage() {
             <h3 className="text-xl mb-1">Send the Letter</h3>
             <p className="text-3xl font-['DM_Sans'] font-bold mt-2">$29</p>
             <p className="text-sm text-[var(--muted)] mb-6">one-time payment</p>
-            <ul className="space-y-3 text-sm">
+            <ul className="space-y-3 text-base">
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Full document access</li>
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Download as PDF</li>
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Email delivery to recipient</li>
@@ -115,7 +115,7 @@ export default function HomePage() {
             <h3 className="text-xl mb-1">Go Full Petty</h3>
             <p className="text-3xl font-['DM_Sans'] font-bold mt-2">$49</p>
             <p className="text-sm text-[var(--muted)] mb-6">one-time payment</p>
-            <ul className="space-y-3 text-sm">
+            <ul className="space-y-3 text-base">
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Everything in Send the Letter</li>
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Download as Word doc</li>
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Edit all fields in-browser</li>
@@ -125,7 +125,7 @@ export default function HomePage() {
           </div>
         </div>
         <div className="text-center mt-12">
-          <Link href="/pricing" className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] underline underline-offset-4 transition-colors">
+          <Link href="/pricing" className="text-base text-[var(--muted)] hover:text-[var(--foreground)] underline underline-offset-4 transition-colors">
             View full pricing
           </Link>
         </div>

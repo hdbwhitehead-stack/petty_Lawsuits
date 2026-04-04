@@ -80,7 +80,7 @@ export default function HowItWorksPage() {
               {step.sections.map(s => (
                 <div key={s.heading}>
                   <h3 className="text-base font-medium mb-2 font-['DM_Sans']">{s.heading}</h3>
-                  <p className="text-sm text-[var(--muted)] leading-relaxed">{s.text}</p>
+                  <p className="text-base text-[var(--muted)] leading-relaxed">{s.text}</p>
                 </div>
               ))}
             </div>

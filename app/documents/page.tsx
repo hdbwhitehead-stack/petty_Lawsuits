@@ -69,10 +69,10 @@ export default function DocumentsPage() {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <h2 className="text-2xl mb-2">{cat.name}</h2>
-                <p className="text-[var(--muted)] text-sm mb-4">{cat.description}</p>
+                <p className="text-[var(--muted)] text-base mb-4">{cat.description}</p>
                 <div className="space-y-1">
                   {cat.examples.map(ex => (
-                    <p key={ex} className="text-xs text-[var(--muted)] flex items-start gap-2">
+                    <p key={ex} className="text-sm text-[var(--muted)] flex items-start gap-2">
                       <span className="text-[var(--accent)] mt-0.5">&mdash;</span>
                       {ex}
                     </p>
@@ -83,7 +83,7 @@ export default function DocumentsPage() {
                 {cat.available ? (
                   <Link
                     href="/wizard"
-                    className="text-sm bg-[var(--foreground)] text-white px-5 py-2 rounded-full hover:opacity-90 transition-opacity whitespace-nowrap"
+                    className="text-base bg-[var(--foreground)] text-white px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity whitespace-nowrap"
                   >
                     Create document
                   </Link>

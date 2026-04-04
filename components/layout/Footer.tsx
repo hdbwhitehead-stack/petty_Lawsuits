@@ -15,7 +15,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-start gap-8">
           <div>
             <p className="font-['Instrument_Serif'] text-lg">Petty Lawsuits</p>
-            <p className="text-xs text-[var(--muted)] mt-2 max-w-xs leading-relaxed">
+            <p className="text-sm text-[var(--muted)] mt-2 max-w-xs leading-relaxed">
               This is a document generation tool, not a legal service. It does not constitute legal advice.
             </p>
           </div>
@@ -25,7 +25,7 @@ export default function Footer() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+                className="text-base text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
               >
                 {link.label}
               </Link>
@@ -34,7 +34,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-6 border-t border-[var(--border)]">
-          <p className="text-xs text-[var(--muted)]">&copy; 2026 Petty Lawsuits. All rights reserved.</p>
+          <p className="text-sm text-[var(--muted)]">&copy; 2026 Petty Lawsuits. All rights reserved.</p>
         </div>
       </div>
     </footer>

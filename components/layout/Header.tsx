@@ -26,14 +26,14 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+              className="text-base text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
             >
               {link.label}
             </Link>
           ))}
           <Link
             href="/wizard"
-            className="text-sm bg-[var(--foreground)] text-white px-5 py-2 rounded-full hover:opacity-90 transition-opacity"
+            className="text-base bg-[var(--foreground)] text-white px-5 py-2 rounded-full hover:opacity-90 transition-opacity"
           >
             Get Started
           </Link>
@@ -59,7 +59,7 @@ export default function Header() {
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="block text-sm text-[var(--muted)] hover:text-[var(--foreground)]"
+              className="block text-base text-[var(--muted)] hover:text-[var(--foreground)]"
             >
               {link.label}
             </Link>
@@ -67,7 +67,7 @@ export default function Header() {
           <Link
             href="/wizard"
             onClick={() => setOpen(false)}
-            className="block text-sm bg-[var(--foreground)] text-white px-5 py-2 rounded-full text-center mt-4"
+            className="block text-base bg-[var(--foreground)] text-white px-5 py-2.5 rounded-full text-center mt-4"
           >
             Get Started
           </Link>

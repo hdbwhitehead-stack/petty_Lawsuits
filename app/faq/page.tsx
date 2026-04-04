@@ -93,13 +93,13 @@ function FAQItem({ q, a }: { q: string; a: string }) {
       className="w-full text-left border-b border-[var(--border)] py-5"
     >
       <div className="flex items-start justify-between gap-4">
-        <h3 className="text-sm font-medium font-['DM_Sans']">{q}</h3>
+        <h3 className="text-base font-medium font-['DM_Sans']">{q}</h3>
         <span className="text-[var(--muted)] text-lg flex-shrink-0 leading-none mt-0.5">
           {open ? '\u2212' : '+'}
         </span>
       </div>
       {open && (
-        <p className="text-sm text-[var(--muted)] leading-relaxed mt-3 pr-8">{a}</p>
+        <p className="text-base text-[var(--muted)] leading-relaxed mt-3 pr-8">{a}</p>
       )}
     </button>
   )

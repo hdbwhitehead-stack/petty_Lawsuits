@@ -78,7 +78,7 @@ export default function PricingPage() {
             <p className="text-sm text-[var(--muted)] mb-8">one-time payment</p>
             <ul className="space-y-3 mb-8">
               {tier.features.map(f => (
-                <li key={f} className="text-sm flex gap-2">
+                <li key={f} className="text-base flex gap-2">
                   <span className="text-[var(--accent)]">&#10003;</span>
                   {f}
                 </li>
@@ -101,7 +101,7 @@ export default function PricingPage() {
       {/* Subscription */}
       <div className="max-w-2xl mx-auto mt-8 border border-[var(--border)] rounded-lg p-8 bg-[var(--card)] text-center">
         <h3 className="text-xl mb-2">Monthly Subscription</h3>
-        <p className="text-sm text-[var(--muted)] mb-4">
+        <p className="text-base text-[var(--muted)] mb-4">
           For businesses and frequent filers. Unlimited document generation with all features included.
         </p>
         <span className="text-xs text-[var(--muted)] border border-[var(--border)] px-3 py-1.5 rounded-full">
@@ -116,7 +116,7 @@ export default function PricingPage() {
           {PRICING_FAQ.map(item => (
             <div key={item.q} className="border-b border-[var(--border)] pb-8">
               <h3 className="text-base font-medium font-['DM_Sans'] mb-2">{item.q}</h3>
-              <p className="text-sm text-[var(--muted)] leading-relaxed">{item.a}</p>
+              <p className="text-base text-[var(--muted)] leading-relaxed">{item.a}</p>
             </div>
           ))}
         </div>
