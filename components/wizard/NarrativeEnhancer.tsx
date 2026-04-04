@@ -6,18 +6,22 @@ type Props = {
   onAccept: (text: string) => void
 }
 
+const ENHANCE_LIMIT = 10
+
 export default function NarrativeEnhancer({ description, onAccept }: Props) {
   const [enhanced, setEnhanced] = useState('')
   const [editing, setEditing] = useState(false)
   const [editDraft, setEditDraft] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
+  const [usesRemaining, setUsesRemaining] = useState(ENHANCE_LIMIT)
 
-  const canEnhance = description.trim().length >= 20
+  const canEnhance = description.trim().length >= 20 && usesRemaining > 0
 
   const handleEnhance = useCallback(async () => {
     if (!canEnhance || loading) return
     setLoading(true)
+    setUsesRemaining(prev => prev - 1)
     setError(false)
     setEnhanced('')
     setEditing(false)
@@ -33,9 +37,11 @@ export default function NarrativeEnhancer({ description, onAccept }: Props) {
         setEnhanced(data.enhanced)
       } else {
         setError(true)
+        setUsesRemaining(prev => prev + 1)
       }
     } catch {
       setError(true)
+      setUsesRemaining(prev => prev + 1)
     } finally {
       setLoading(false)
     }
@@ -70,7 +76,7 @@ export default function NarrativeEnhancer({ description, onAccept }: Props) {
   return (
     <div className="mt-3 space-y-3">
       {/* Enhance button — shown when no result is displayed */}
-      {!enhanced && !loading && (
+      {!enhanced && !loading && usesRemaining > 0 && (
         <button
           type="button"
           onClick={handleEnhance}
@@ -80,7 +86,17 @@ export default function NarrativeEnhancer({ description, onAccept }: Props) {
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
           Enhance with AI
+          {usesRemaining < ENHANCE_LIMIT && (
+            <span className="text-xs text-[var(--muted)]">({usesRemaining} left)</span>
+          )}
         </button>
+      )}
+
+      {/* Limit reached */}
+      {!enhanced && !loading && usesRemaining <= 0 && description.trim().length >= 20 && (
+        <p className="text-sm text-[var(--muted)]">
+          Enhancement limit reached. You can still edit your description manually.
+        </p>
       )}
 
       {/* Loading state */}
