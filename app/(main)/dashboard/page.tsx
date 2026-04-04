@@ -31,7 +31,7 @@ export default async function DashboardPage() {
 
   const { data: documents } = await supabase
     .from('documents')
-    .select('id, state, category, status, unlocked, created_at')
+    .select('id, state, category, status, unlocked, created_at, current_content')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
@@ -64,6 +64,10 @@ export default async function DashboardPage() {
               ? `/document/${doc.id}`
               : `/preview/${doc.id}`
 
+            const content = (doc.current_content ?? {}) as Record<string, string>
+            const recipient =
+              content.debtor_name ?? content.business_name ?? content.landlord_name ?? content.employer_name ?? null
+
             return (
               <Link
                 key={doc.id}
@@ -73,10 +77,10 @@ export default async function DashboardPage() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="text-base font-medium text-[var(--foreground)]">
-                      {doc.category}
+                      {recipient ? `Demand Letter — ${recipient}` : doc.category}
                     </p>
                     <p className="text-sm text-[var(--muted)] mt-1">
-                      {doc.state} &middot; {formatDate(doc.created_at)}
+                      {doc.category}{doc.state ? ` · ${doc.state}` : ''} &middot; {formatDate(doc.created_at)}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
