@@ -1,40 +1,46 @@
 'use client'
-import { parseStateFromLocation, STATE_TRIBUNAL } from '@/lib/documents/jurisdiction'
+import { parseStateFromLocation, getJurisdiction } from '@/lib/documents/jurisdiction'
+import type { DisputeType } from '@/lib/documents/jurisdiction'
 
 type Props = {
   location: string
   amount: string
+  disputeType?: string
 }
 
-const SMALL_CLAIMS_LIMITS: Record<string, number> = {
-  NSW: 100000,
-  VIC: 100000,
-  QLD: 75000,
-  WA: 75000,
-  SA: 100000,
-  TAS: 50000,
-  ACT: 25000,
-  NT: 25000,
-}
-
-export default function CourtWidget({ location, amount }: Props) {
+export default function CourtWidget({ location, amount, disputeType }: Props) {
   const state = parseStateFromLocation(location)
   if (!state || !amount) return null
 
-  const tribunal = STATE_TRIBUNAL[state]
-  const limit = SMALL_CLAIMS_LIMITS[state]
+  const jurisdiction = getJurisdiction(state, disputeType as DisputeType | undefined)
+  if (!jurisdiction) return null
+
   const amountNum = parseFloat(amount.replace(/[^0-9.]/g, ''))
-  const withinLimit = !isNaN(amountNum) && amountNum <= (limit ?? 0)
+  const withinSmall = !isNaN(amountNum) && amountNum <= jurisdiction.smallClaimsLimit
+  const withinGeneral = !isNaN(amountNum) && amountNum <= jurisdiction.generalLimit
 
   return (
-    <div className="border rounded p-4 bg-gray-50">
-      <p className="font-medium">Filing in: {tribunal}</p>
-      <p className="text-sm text-gray-600 mt-1">
-        Small claims limit: ${limit?.toLocaleString()} AUD
-        {withinLimit
-          ? ' — your claim is within the small claims threshold'
-          : ' — your claim may exceed the small claims threshold'}
+    <div className="border rounded-lg p-4 bg-[var(--card)] border-[var(--border)]">
+      <p className="font-medium text-base">
+        Filing with: {jurisdiction.body}
       </p>
+      <p className="text-sm text-[var(--muted)] mt-1">
+        Small claims limit: ${jurisdiction.smallClaimsLimit.toLocaleString()} AUD
+        {' · '}
+        General limit: ${jurisdiction.generalLimit.toLocaleString()} AUD
+      </p>
+      <p className="text-sm mt-2">
+        {withinSmall
+          ? '✓ Your claim is within the small claims threshold (simplified procedure)'
+          : withinGeneral
+          ? '→ Your claim exceeds the small claims threshold but is within the general limit'
+          : '⚠ Your claim may exceed this body\'s jurisdictional limit — consider seeking legal advice'}
+      </p>
+      {jurisdiction.notes && (
+        <p className="text-sm text-[var(--muted)] mt-2 border-t border-[var(--border)] pt-2">
+          {jurisdiction.notes}
+        </p>
+      )}
     </div>
   )
 }
