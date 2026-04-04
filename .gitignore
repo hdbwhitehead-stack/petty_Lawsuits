@@ -26,3 +26,13 @@ build/
 # IDE
 .vscode/
 .idea/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Testing
+/coverage
+
+# Misc
+*.pem

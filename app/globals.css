@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+:root {
+  --background: #FAFAF8;
+  --foreground: #1A1A1A;
+  --accent: #C8956C;
+  --accent-dark: #A8744E;
+  --accent-light: #F5EDE6;
+  --accent-tint: #FBF5F0;
+  --muted: #6B6B6B;
+  --border: #E5E5E3;
+  --card: #FFFFFF;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Instrument Serif reserved for brand logo only — applied via inline class */
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
