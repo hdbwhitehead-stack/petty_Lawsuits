@@ -12,11 +12,11 @@ export default function ProgressSidebar({ currentStep, answers, onStepClick }: P
   const percent = Math.round((currentStep / 4) * 100)
 
   return (
-    <aside className="w-64 border-r p-6 hidden md:block">
-      <h2 className="font-bold text-lg mb-4">Progress</h2>
-      <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
+    <aside className="w-64 border-r border-[var(--border)] bg-[var(--card)] p-6 hidden md:block">
+      <h2 className="text-lg mb-4">Progress</h2>
+      <div className="w-full bg-[var(--accent-light)] rounded-full h-2 mb-6">
         <div
-          className="bg-black h-2 rounded-full transition-all"
+          className="bg-[var(--accent)] h-2 rounded-full transition-all"
           style={{ width: `${percent}%` }}
         />
       </div>
@@ -26,20 +26,29 @@ export default function ProgressSidebar({ currentStep, answers, onStepClick }: P
           <li
             key={step}
             onClick={() => i <= currentStep && onStepClick(i)}
-            className={`text-sm ${
+            className={`text-sm font-['DM_Sans'] flex items-center gap-2 ${
               i < currentStep
-                ? 'text-blue-600 cursor-pointer hover:underline'
+                ? 'text-[var(--accent)] cursor-pointer hover:underline'
                 : i === currentStep
-                ? 'font-bold'
-                : 'text-gray-400'
+                ? 'text-[var(--foreground)] font-semibold'
+                : 'text-[var(--muted)]'
             }`}
           >
-            {i + 1}. {step}
+            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
+              i < currentStep
+                ? 'bg-[var(--accent)] text-white'
+                : i === currentStep
+                ? 'bg-[var(--foreground)] text-white'
+                : 'bg-[var(--accent-light)] text-[var(--muted)]'
+            }`}>
+              {i < currentStep ? '\u2713' : i + 1}
+            </span>
+            {step}
           </li>
         ))}
       </ol>
 
-      <div className="mt-8 space-y-2 text-sm text-gray-600">
+      <div className="mt-8 space-y-2 text-sm text-[var(--muted)] font-['DM_Sans']">
         {answers.defendant_first_name && (
           <p>Defendant: {answers.defendant_first_name} {answers.defendant_last_name}</p>
         )}

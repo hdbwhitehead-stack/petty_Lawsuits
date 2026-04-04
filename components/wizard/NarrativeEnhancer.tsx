@@ -47,11 +47,11 @@ export default function NarrativeEnhancer({ description, onEnhanced }: Props) {
   if (!enhanced && !loading) return null
 
   return (
-    <div className="border rounded p-4 bg-blue-50">
-      <p className="text-sm font-medium text-blue-800 mb-2">
+    <div className="border border-[var(--border)] rounded-lg p-4 bg-[var(--accent-light)] mt-3">
+      <p className="text-sm font-medium text-[var(--accent)] mb-2 font-['DM_Sans']">
         {loading ? 'Enhancing your description...' : 'Enhanced version:'}
       </p>
-      {enhanced && <p className="text-sm text-gray-700">{enhanced}</p>}
+      {enhanced && <p className="text-sm text-[var(--foreground)] font-['DM_Sans']">{enhanced}</p>}
     </div>
   )
 }

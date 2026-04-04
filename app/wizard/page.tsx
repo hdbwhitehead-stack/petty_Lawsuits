@@ -59,9 +59,9 @@ export default function WizardPage() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-[var(--background)]">
       <ProgressSidebar currentStep={step} answers={answers} onStepClick={setStep} />
-      <main className="flex-1 max-w-2xl mx-auto p-6 py-10">
+      <main className="flex-1 max-w-3xl mx-auto px-6 py-10 md:py-16">
         {step === 0 && (
           <DefendantStep answers={answers} onUpdate={updateAnswers} onNext={() => setStep(1)} />
         )}
