@@ -54,13 +54,14 @@ export default function HomePage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
           <Link
             href="/wizard"
-            className="inline-block bg-[var(--foreground)] text-white px-8 py-3.5 rounded-full text-base hover:opacity-90 transition-opacity"
+            className="inline-block text-white px-8 py-3.5 rounded-full text-base transition-colors"
+            style={{ background: 'var(--accent)' }}
           >
             Get Started
           </Link>
           <Link
             href="/how-it-works"
-            className="inline-block text-[var(--foreground)] border border-[var(--border)] px-8 py-3.5 rounded-full text-base hover:border-[var(--foreground)] transition-colors"
+            className="inline-block text-[var(--foreground)] border border-[var(--border)] px-8 py-3.5 rounded-full text-base hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors"
           >
             How it works
           </Link>
@@ -72,7 +73,7 @@ export default function HomePage() {
         <div className="grid grid-cols-3 border border-[var(--border)] rounded-lg bg-[var(--card)] divide-x divide-[var(--border)]">
           {STATS.map(stat => (
             <div key={stat.label} className="py-5 md:py-6 text-center">
-              <p className="text-2xl md:text-3xl font-bold">{stat.value}</p>
+              <p className="text-2xl md:text-3xl font-bold text-[var(--accent)]">{stat.value}</p>
               <p className="text-sm text-[var(--muted)] mt-1">{stat.label}</p>
             </div>
           ))}
@@ -80,7 +81,7 @@ export default function HomePage() {
       </div>
 
       {/* How It Works */}
-      <section className="bg-[var(--card)] border-y border-[var(--border)]">
+      <section style={{ background: 'var(--accent-tint)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
           <h2 className="text-3xl md:text-4xl text-center mb-12">Three steps to your document</h2>
           <div className="grid md:grid-cols-3 gap-10 md:gap-12">
@@ -124,7 +125,7 @@ export default function HomePage() {
         </p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {USE_CASES.map(uc => (
-            <div key={uc.situation} className="border border-[var(--border)] rounded-lg p-6 bg-[var(--card)]">
+            <div key={uc.situation} className="border border-[var(--border)] rounded-lg p-6 bg-[var(--card)] hover:border-[var(--accent)] transition-colors">
               <h3 className="text-lg mb-1 font-medium">{uc.situation}</h3>
               <p className="text-base text-[var(--muted)] leading-relaxed mb-3">{uc.detail}</p>
               <p className="text-sm text-[var(--accent)] font-medium">{uc.document}</p>
@@ -147,7 +148,7 @@ export default function HomePage() {
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {TEMPLATES.map(t => (
-              <div key={t.id} className="border border-[var(--border)] rounded-lg p-6 bg-[var(--background)] hover:border-[var(--accent)] transition-colors">
+              <div key={t.id} className="border border-[var(--border)] rounded-lg p-6 bg-[var(--background)] hover:border-[var(--accent)] hover:bg-[var(--accent-tint)] transition-colors">
                 <h3 className="text-lg mb-2">{t.category}</h3>
                 <p className="text-base text-[var(--muted)] leading-relaxed">{t.description}</p>
               </div>
@@ -178,8 +179,8 @@ export default function HomePage() {
               <li className="flex gap-2"><span className="text-[var(--accent)]">&#10003;</span> Saved to your account</li>
             </ul>
           </div>
-          <div className="border-2 border-[var(--foreground)] rounded-lg p-8 bg-[var(--card)] relative">
-            <span className="absolute -top-3 left-6 bg-[var(--foreground)] text-white text-xs px-3 py-1 rounded-full">Recommended</span>
+          <div className="rounded-lg p-8 bg-[var(--card)] relative" style={{ border: '2px solid var(--accent)' }}>
+            <span className="absolute -top-3 left-6 text-white text-xs px-3 py-1 rounded-full" style={{ background: 'var(--accent)' }}>Recommended</span>
             <h3 className="text-xl mb-1">Go Full Petty</h3>
             <p className="text-3xl font-bold mt-2">$49</p>
             <p className="text-sm text-[var(--muted)] mb-6">one-time payment</p>
@@ -217,7 +218,7 @@ export default function HomePage() {
               { code: 'ACT', tribunal: 'ACAT' },
               { code: 'NT', tribunal: 'NTCAT' },
             ].map(j => (
-              <div key={j.code} className="border border-[var(--border)] rounded-lg px-5 py-3 bg-[var(--background)]">
+              <div key={j.code} className="border border-[var(--border)] rounded-lg px-5 py-3 bg-[var(--background)] hover:border-[var(--accent)] transition-colors">
                 <p className="font-bold text-base">{j.code}</p>
                 <p className="text-sm text-[var(--muted)]">{j.tribunal}</p>
               </div>
@@ -232,7 +233,8 @@ export default function HomePage() {
         <p className="text-[var(--muted)] text-lg mb-8">Your first document takes about 5 minutes. No account required to start.</p>
         <Link
           href="/wizard"
-          className="inline-block bg-[var(--foreground)] text-white px-8 py-3.5 rounded-full text-base hover:opacity-90 transition-opacity"
+          className="inline-block text-white px-8 py-3.5 rounded-full text-base transition-colors"
+          style={{ background: 'var(--accent)' }}
         >
           Create your document
         </Link>

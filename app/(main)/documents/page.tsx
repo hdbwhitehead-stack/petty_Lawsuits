@@ -72,7 +72,7 @@ export default function DocumentsPage() {
         {available.map(cat => (
           <div
             key={cat.id}
-            className="border border-[var(--border)] rounded-lg p-6 md:p-8 bg-[var(--card)]"
+            className="border border-[var(--border)] rounded-lg p-6 md:p-8 bg-[var(--card)] hover:border-[var(--accent)] transition-colors"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
@@ -90,7 +90,8 @@ export default function DocumentsPage() {
               <div className="flex-shrink-0 pt-1">
                 <Link
                   href="/wizard"
-                  className="text-base bg-[var(--foreground)] text-white px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity whitespace-nowrap"
+                  className="text-base text-white px-5 py-2.5 rounded-full transition-colors whitespace-nowrap"
+                  style={{ background: 'var(--accent)' }}
                 >
                   Create document
                 </Link>

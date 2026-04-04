@@ -10,7 +10,7 @@ const LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[var(--border)] mt-0">
+    <footer className="border-t border-[var(--border)] mt-0" style={{ background: 'var(--accent-tint)' }}>
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="flex flex-col md:flex-row justify-between items-start gap-8">
           <div>

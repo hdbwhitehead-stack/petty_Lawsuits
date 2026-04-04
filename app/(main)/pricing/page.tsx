@@ -73,14 +73,14 @@ export default function PricingPage() {
         {TIERS.map(tier => (
           <div
             key={tier.name}
-            className={`rounded-lg p-8 bg-[var(--card)] ${
-              tier.highlight
-                ? 'border-2 border-[var(--foreground)] relative'
-                : 'border border-[var(--border)]'
-            }`}
+            className="rounded-lg p-8 bg-[var(--card)] relative"
+            style={tier.highlight
+              ? { border: '2px solid var(--accent)' }
+              : { border: '1px solid var(--border)' }
+            }
           >
             {tier.highlight && (
-              <span className="absolute -top-3 left-6 bg-[var(--foreground)] text-white text-xs px-3 py-1 rounded-full">
+              <span className="absolute -top-3 left-6 text-white text-xs px-3 py-1 rounded-full" style={{ background: 'var(--accent)' }}>
                 Recommended
               </span>
             )}
@@ -97,11 +97,11 @@ export default function PricingPage() {
             </ul>
             <Link
               href="/wizard"
-              className={`block text-center rounded-full px-6 py-3 text-base font-medium transition-opacity hover:opacity-90 ${
-                tier.highlight
-                  ? 'bg-[var(--foreground)] text-white'
-                  : 'border border-[var(--foreground)]'
-              }`}
+              className="block text-center rounded-full px-6 py-3 text-base font-medium transition-colors"
+              style={tier.highlight
+                ? { background: 'var(--accent)', color: 'white' }
+                : { border: '1px solid var(--border)', color: 'var(--foreground)' }
+              }
             >
               Get Started
             </Link>

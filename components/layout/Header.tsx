@@ -16,7 +16,7 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--border)]">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="font-['Instrument_Serif'] text-xl tracking-tight">
+        <Link href="/" className="font-['Instrument_Serif'] text-xl tracking-tight hover:opacity-80 transition-opacity">
           Petty Lawsuits
         </Link>
 
@@ -33,7 +33,10 @@ export default function Header() {
           ))}
           <Link
             href="/wizard"
-            className="text-base bg-[var(--foreground)] text-white px-5 py-2 rounded-full hover:opacity-90 transition-opacity"
+            className="text-base text-white px-5 py-2 rounded-full transition-colors"
+            style={{ background: 'var(--accent)' }}
+            onMouseOver={e => (e.currentTarget.style.background = 'var(--accent-dark)')}
+            onMouseOut={e => (e.currentTarget.style.background = 'var(--accent)')}
           >
             Get Started
           </Link>
@@ -67,7 +70,8 @@ export default function Header() {
           <Link
             href="/wizard"
             onClick={() => setOpen(false)}
-            className="block text-base bg-[var(--foreground)] text-white px-5 py-2.5 rounded-full text-center mt-4"
+            className="block text-base text-white px-5 py-2.5 rounded-full text-center mt-4"
+            style={{ background: 'var(--accent)' }}
           >
             Get Started
           </Link>
