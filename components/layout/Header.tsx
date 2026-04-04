@@ -1,6 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import type { User } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/client'
 
 const NAV_LINKS = [
   { href: '/how-it-works', label: 'How It Works' },
@@ -12,6 +15,24 @@ const NAV_LINKS = [
 
 export default function Header() {
   const [open, setOpen] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  async function handleLogout() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/')
+    router.refresh()
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--border)]">
@@ -31,15 +52,41 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/wizard"
-            className="text-base text-white px-5 py-2 rounded-full transition-colors"
-            style={{ background: 'var(--accent)' }}
-            onMouseOver={e => (e.currentTarget.style.background = 'var(--accent-dark)')}
-            onMouseOut={e => (e.currentTarget.style.background = 'var(--accent)')}
-          >
-            Get Started
-          </Link>
+
+          {user ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="text-base text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+              >
+                My Documents
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-base text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-base text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/wizard"
+                className="text-base text-white px-5 py-2 rounded-full transition-colors"
+                style={{ background: 'var(--accent)' }}
+                onMouseOver={e => (e.currentTarget.style.background = 'var(--accent-dark)')}
+                onMouseOut={e => (e.currentTarget.style.background = 'var(--accent)')}
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* Mobile hamburger */}
@@ -67,14 +114,42 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/wizard"
-            onClick={() => setOpen(false)}
-            className="block text-base text-white px-5 py-2.5 rounded-full text-center mt-4"
-            style={{ background: 'var(--accent)' }}
-          >
-            Get Started
-          </Link>
+
+          {user ? (
+            <>
+              <Link
+                href="/dashboard"
+                onClick={() => setOpen(false)}
+                className="block text-base text-[var(--muted)] hover:text-[var(--foreground)]"
+              >
+                My Documents
+              </Link>
+              <button
+                onClick={() => { setOpen(false); handleLogout() }}
+                className="block text-base text-[var(--muted)] hover:text-[var(--foreground)] w-full text-left"
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="block text-base text-[var(--muted)] hover:text-[var(--foreground)]"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/wizard"
+                onClick={() => setOpen(false)}
+                className="block text-base text-white px-5 py-2.5 rounded-full text-center mt-4"
+                style={{ background: 'var(--accent)' }}
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </nav>
       )}
     </header>
