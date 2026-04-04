@@ -37,7 +37,13 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
         />
         <NarrativeEnhancer
           description={answers.description ?? ''}
-          onEnhanced={(enhanced) => handleChange('enhanced_description', enhanced)}
+          onAccept={(text) => {
+            const updates: Record<string, string> = { description: text }
+            if (!answers.original_description) {
+              updates.original_description = answers.description ?? ''
+            }
+            onUpdate(updates)
+          }}
         />
       </div>
 
