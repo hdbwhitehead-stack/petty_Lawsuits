@@ -25,28 +25,68 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="max-w-sm mx-auto mt-20 p-6">
-      <h1 className="text-2xl font-bold mb-6">Create your account</h1>
-      <form onSubmit={handleSignup} className="space-y-4">
-        <input type="email" placeholder="Email" value={email}
-          onChange={e => setEmail(e.target.value)}
-          className="w-full border rounded px-3 py-2" required />
-        <input type="password" placeholder="Password" value={password}
-          onChange={e => setPassword(e.target.value)}
-          className="w-full border rounded px-3 py-2" required />
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-        <button type="submit"
-          className="w-full bg-black text-white rounded px-3 py-2">
-          Sign up
+    <main className="max-w-4xl mx-auto px-6 py-20 md:py-24">
+      <div className="max-w-md mx-auto bg-[var(--card)] border border-[var(--border)] rounded-lg p-8">
+        <h1 className="text-3xl text-center mb-8">Create your account</h1>
+        <form onSubmit={handleSignup} className="space-y-5">
+          <div>
+            <label htmlFor="email" className="text-base font-medium font-['DM_Sans'] mb-2 block">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="w-full border border-[var(--border)] rounded-lg px-4 py-3 bg-[var(--background)] text-base focus:outline-none focus:border-[var(--accent)] transition-colors"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="text-base font-medium font-['DM_Sans'] mb-2 block">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Choose a password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="w-full border border-[var(--border)] rounded-lg px-4 py-3 bg-[var(--background)] text-base focus:outline-none focus:border-[var(--accent)] transition-colors"
+              required
+            />
+          </div>
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <button
+            type="submit"
+            className="w-full bg-[var(--foreground)] text-white rounded-full py-3 text-base font-medium hover:opacity-90 transition-opacity"
+          >
+            Sign up
+          </button>
+        </form>
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-[var(--border)]" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-[var(--card)] px-3 text-[var(--muted)]">or</span>
+          </div>
+        </div>
+        <button
+          onClick={handleGoogle}
+          className="w-full border border-[var(--border)] rounded-full py-3 text-base font-medium hover:bg-[var(--accent-light)] transition-colors"
+        >
+          Continue with Google
         </button>
-      </form>
-      <button onClick={handleGoogle}
-        className="w-full mt-3 border rounded px-3 py-2">
-        Continue with Google
-      </button>
-      <p className="mt-4 text-sm text-center">
-        Already have an account? <a href="/login" className="underline">Log in</a>
-      </p>
+        <p className="mt-6 text-sm text-center text-[var(--muted)]">
+          Already have an account?{' '}
+          <a href="/login" className="text-[var(--accent)] hover:underline">Log in</a>
+        </p>
+        <p className="mt-4 text-xs text-center text-[var(--muted)]">
+          This service does not provide legal advice.
+        </p>
+      </div>
     </main>
   )
 }
