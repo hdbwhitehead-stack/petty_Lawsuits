@@ -29,6 +29,9 @@ Preview page with server-side redaction, unlock modal, Stripe Checkout flow, web
 ### Plan 4 — Editor & Export: COMPLETE
 Editor page at `app/(main)/document/[documentId]/page.tsx`. Components: `DocumentEditor`, `DocumentView`, `FieldInput`. Auto-save on blur + every 30s via `PATCH /api/documents/[id]`. Restore original button. PDF and Word export via `lib/documents/export.ts` + `GET /api/documents/[id]/download?format=pdf|word`. `NextStepsPanel` shown below editor for the document's state. `lib/documents/next-steps.ts` has state blurbs (needs lawyer review before launch). Note: `NextStepsPanel.tsx` was pre-built and is more advanced than Plan 4 specified — it shows official court forms and filing fees.
 
+### Plan 4.5 — Auth Flow & Document Management Fixes: COMPLETE
+Fixed 8 revenue-blocking issues: (1) `app/auth/callback/route.ts` — email verification no longer 404s; (2) `lib/anonymous.ts` — `claimAnonDocument()` added; (3) `UnlockModal` shows sign-up gate for unauthenticated users, tier cards for logged-in users; (4) Signup/login pages pass `documentId` and `anonKey` through the verification email so users land back at their preview after verifying; (5) `middleware.ts` appends `?returnTo=` when redirecting to login; (6) Header shows Login/My Documents/Logout based on auth state; (7) Preview page has ownership check (anonymous docs visible by UUID, owned docs only by owner); (8) Dashboard shows recipient name in document cards; (9) `ResumeBanner` component shows on all main pages for returning anonymous users. **Reminder:** add `http://localhost:3000/auth/callback` and production URL to Supabase Auth → Redirect URLs.
+
 ### Plan 5 — Email & Polish: NOT STARTED — **Start here next**
 No Resend email integration, no account management page, no billing portal route. Dashboard shell exists at `app/(main)/dashboard/page.tsx` but is not wired to real data.
 
