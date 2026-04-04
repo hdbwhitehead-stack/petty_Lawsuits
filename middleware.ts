@@ -31,7 +31,8 @@ export async function middleware(request: NextRequest) {
   )
 
   if (isProtected && !user) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    const returnTo = encodeURIComponent(request.nextUrl.pathname + request.nextUrl.search)
+    return NextResponse.redirect(new URL(`/login?returnTo=${returnTo}`, request.url))
   }
 
   return supabaseResponse

@@ -1,32 +1,45 @@
 'use client'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const supabase = createClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const returnTo = searchParams.get('returnTo') ?? '/dashboard'
+  const verificationError = searchParams.get('error') === 'verification_failed'
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) { setError(error.message); return }
-    router.push('/dashboard')
+    router.push(returnTo)
   }
 
   async function handleGoogle() {
+    const callbackParams = new URLSearchParams()
+    callbackParams.set('next', returnTo)
+    const redirectTo = `${location.origin}/auth/callback?${callbackParams.toString()}`
+
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${location.origin}/dashboard` }
+      options: { redirectTo },
     })
   }
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-20 md:py-24">
       <div className="max-w-md mx-auto bg-[var(--card)] border border-[var(--border)] rounded-lg p-8">
+        {verificationError && (
+          <p className="text-sm text-red-600 text-center mb-6 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+            Email verification failed. Please try again or contact support.
+          </p>
+        )}
         <h1 className="text-3xl text-center mb-8">Log in</h1>
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
@@ -88,5 +101,13 @@ export default function LoginPage() {
         </p>
       </div>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }
