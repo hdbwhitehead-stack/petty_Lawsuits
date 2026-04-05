@@ -306,6 +306,14 @@
     )
   }
   ```
+- [ ] Add the Google logo to the "Continue with Google" button on both signup and login pages. Download the official Google G logo SVG from Google's branding guidelines and save it to `public/google-logo.svg`, then update the button:
+  ```tsx
+  <button onClick={handleGoogle}
+    className="w-full mt-3 border rounded px-3 py-2 flex items-center justify-center gap-2">
+    <img src="/google-logo.svg" alt="" className="w-5 h-5" />
+    Continue with Google
+  </button>
+  ```
 - [ ] Add a Playwright test to `e2e/auth.spec.ts` verifying the signup form renders and shows the verify page after submission (use a test email)
 - [ ] Run: `npx playwright test e2e/auth.spec.ts`
 - [ ] Commit: `git add -A && git commit -m "feat: add signup, login, and verify pages"`
