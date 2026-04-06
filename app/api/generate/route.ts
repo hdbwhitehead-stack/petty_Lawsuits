@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { generateDocument } from '@/lib/claude/generate'
 import { getTemplate } from '@/lib/documents/templates'
 import { parseStateFromLocation } from '@/lib/documents/jurisdiction'
+import { sendDocumentReady } from '@/lib/email/resend'
 
 export async function POST(req: NextRequest) {
   const { templateId, wizardAnswers, evidenceFilenames, anonymousKey } = await req.json()
@@ -88,6 +89,13 @@ export async function POST(req: NextRequest) {
       current_content: content!,
     })
     .eq('id', doc.id)
+
+  // Send document-ready email (fire-and-forget)
+  if (user?.email) {
+    sendDocumentReady(user.email, doc.id).catch((err) =>
+      console.error('sendDocumentReady failed:', err)
+    )
+  }
 
   // Record attempt for rate limiting
   if (user) {

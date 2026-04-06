@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
 const STATUS_STYLES: Record<string, string> = {
+  draft: 'bg-[var(--accent-light)] text-[var(--accent)] border-[var(--accent)]',
   ready: 'bg-green-50 text-green-700 border-green-200',
   generating: 'bg-[var(--accent-light)] text-[var(--accent)] border-[var(--accent)]',
   failed: 'bg-red-50 text-red-600 border-red-200',
@@ -10,10 +11,16 @@ const STATUS_STYLES: Record<string, string> = {
 }
 
 const STATUS_LABELS: Record<string, string> = {
+  draft: 'Draft',
   ready: 'Ready',
   generating: 'Generating',
   failed: 'Failed',
   permanently_failed: 'Failed',
+}
+
+function getDisplayStatus(doc: { status: string; unlocked: boolean }) {
+  if (doc.status === 'ready' && !doc.unlocked) return 'draft'
+  return doc.status
 }
 
 function formatDate(dateString: string) {
@@ -61,12 +68,14 @@ export default async function DashboardPage() {
         <div className="space-y-4">
           {docs.map((doc) => {
             const href = doc.unlocked
-              ? `/document/${doc.id}`
-              : `/preview/${doc.id}`
+              ? `/document/${doc.id}?from=dashboard`
+              : `/preview/${doc.id}?from=dashboard`
 
             const content = (doc.current_content ?? {}) as Record<string, string>
             const recipient =
               content.debtor_name ?? content.business_name ?? content.landlord_name ?? content.employer_name ?? null
+
+            const displayStatus = getDisplayStatus(doc)
 
             return (
               <Link
@@ -91,10 +100,10 @@ export default async function DashboardPage() {
                     )}
                     <span
                       className={`text-xs px-2.5 py-1 rounded-full border font-medium ${
-                        STATUS_STYLES[doc.status] ?? 'bg-gray-50 text-gray-500 border-gray-200'
+                        STATUS_STYLES[displayStatus] ?? 'bg-gray-50 text-gray-500 border-gray-200'
                       }`}
                     >
-                      {STATUS_LABELS[doc.status] ?? doc.status}
+                      {STATUS_LABELS[displayStatus] ?? displayStatus}
                     </span>
                   </div>
                 </div>

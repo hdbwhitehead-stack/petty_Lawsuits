@@ -9,7 +9,7 @@ import NextStepsPanel from '@/components/document/NextStepsPanel'
 
 type Props = {
   params: { documentId: string }
-  searchParams: { payment?: string }
+  searchParams: { payment?: string; from?: string }
 }
 
 export default async function PreviewPage({ params, searchParams }: Props) {
@@ -54,6 +54,7 @@ export default async function PreviewPage({ params, searchParams }: Props) {
     content.debtor_name ?? content.business_name ?? content.landlord_name ?? 'the recipient'
 
   const paymentSuccess = searchParams.payment === 'success'
+  const fromDashboard = searchParams.from === 'dashboard'
 
   return (
     <div className="relative min-h-screen bg-[var(--background)] py-10">
@@ -70,6 +71,7 @@ export default async function PreviewPage({ params, searchParams }: Props) {
           documentId={doc.id}
           recipientName={recipientName}
           isAuthenticated={!!user}
+          from={fromDashboard ? 'dashboard' : undefined}
         />
       )}
     </div>

@@ -61,6 +61,12 @@ export default function Header() {
               >
                 My Documents
               </Link>
+              <Link
+                href="/account"
+                className="text-base text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+              >
+                Account
+              </Link>
               <button
                 onClick={handleLogout}
                 className="text-base text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
@@ -123,6 +129,13 @@ export default function Header() {
                 className="block text-base text-[var(--muted)] hover:text-[var(--foreground)]"
               >
                 My Documents
+              </Link>
+              <Link
+                href="/account"
+                onClick={() => setOpen(false)}
+                className="block text-base text-[var(--muted)] hover:text-[var(--foreground)]"
+              >
+                Account
               </Link>
               <button
                 onClick={() => { setOpen(false); handleLogout() }}
