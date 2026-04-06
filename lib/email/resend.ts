@@ -1,6 +1,16 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let _resend: Resend | null = null
+
+function getResend(): Resend {
+  if (!_resend) {
+    // Use a placeholder key at build time to avoid crashing during Next.js page data collection.
+    // Actual sends will fail gracefully if the real key is missing at runtime.
+    const key = process.env.RESEND_API_KEY || 're_build_placeholder'
+    _resend = new Resend(key)
+  }
+  return _resend
+}
 
 const FROM = 'Petty Lawsuits <noreply@pettylawsuits.com.au>'
 const DISCLAIMER =
@@ -10,7 +20,7 @@ export async function sendDocumentReady(to: string, documentId: string) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pettylawsuits.com.au'
   const documentUrl = `${appUrl}/document/${documentId}`
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to,
     subject: 'Your document is ready',
@@ -26,7 +36,7 @@ export async function sendDocumentReady(to: string, documentId: string) {
 export async function sendUnlockFailure(to: string) {
   const supportEmail = 'support@pettylawsuits.com.au'
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to,
     subject: 'There was a problem unlocking your document',
