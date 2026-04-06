@@ -10,7 +10,7 @@ test('signup form renders and links to login', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText('Create your account')
   await expect(page.locator('input[type="email"]')).toBeVisible()
   await expect(page.locator('input[type="password"]')).toBeVisible()
-  await expect(page.locator('a[href="/login"]')).toBeVisible()
+  await expect(page.getByRole('main').locator('a[href="/login"]')).toBeVisible()
 })
 
 test('login form renders and links to signup', async ({ page }) => {

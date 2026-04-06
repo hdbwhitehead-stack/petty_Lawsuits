@@ -155,8 +155,8 @@ export default function HomePage() {
               </div>
             ))}
             {['Neighbour Disputes', 'Employment', 'Contracts', 'Court Filings'].map(cat => (
-              <div key={cat} className="border border-[var(--border)] rounded-lg p-6 bg-[var(--background)] opacity-50">
-                <h3 className="text-lg mb-2">{cat}</h3>
+              <div key={cat} className="border border-[var(--border)] rounded-lg p-6 bg-[var(--background)]">
+                <h3 className="text-lg mb-2 text-[var(--muted)]">{cat}</h3>
                 <p className="text-base text-[var(--muted)]">Coming soon</p>
               </div>
             ))}

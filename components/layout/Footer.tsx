@@ -8,6 +8,11 @@ const LINKS = [
   { href: '/faq', label: 'FAQ' },
 ]
 
+const LEGAL_LINKS = [
+  { href: '/privacy', label: 'Privacy Policy' },
+  { href: '/terms', label: 'Terms of Service' },
+]
+
 export default function Footer() {
   return (
     <footer className="border-t border-[var(--border)] mt-0" style={{ background: 'var(--accent-tint)' }}>
@@ -33,8 +38,19 @@ export default function Footer() {
           </nav>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-[var(--border)]">
+        <div className="mt-12 pt-6 border-t border-[var(--border)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p className="text-sm text-[var(--muted)]">&copy; 2026 Petty Lawsuits. All rights reserved.</p>
+          <nav className="flex gap-6">
+            {LEGAL_LINKS.map(link => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
     </footer>

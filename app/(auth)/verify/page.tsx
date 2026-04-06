@@ -12,7 +12,7 @@ export default function VerifyPage() {
         <div className="mt-8 pt-6 border-t border-[var(--border)]">
           <a
             href="/login"
-            className="text-[var(--accent)] hover:underline text-sm"
+            className="text-[var(--accent)] underline text-sm"
           >
             Back to log in
           </a>

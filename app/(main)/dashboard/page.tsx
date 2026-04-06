@@ -67,7 +67,9 @@ export default async function DashboardPage() {
       ) : (
         <div className="space-y-4">
           {docs.map((doc) => {
-            const href = doc.unlocked
+            const href = doc.status === 'draft'
+              ? `/wizard?draft=${doc.id}`
+              : doc.unlocked
               ? `/document/${doc.id}?from=dashboard`
               : `/preview/${doc.id}?from=dashboard`
 

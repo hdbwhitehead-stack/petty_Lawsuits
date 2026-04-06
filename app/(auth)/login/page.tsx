@@ -100,7 +100,7 @@ function LoginForm() {
         </button>
         <p className="mt-6 text-sm text-center text-[var(--muted)]">
           Don&apos;t have an account?{' '}
-          <a href="/signup" className="text-[var(--accent)] hover:underline">Sign up</a>
+          <a href="/signup" className="text-[var(--accent)] underline">Sign up</a>
         </p>
         <p className="mt-4 text-xs text-center text-[var(--muted)]">
           This service does not provide legal advice.

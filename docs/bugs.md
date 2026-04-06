@@ -6,23 +6,51 @@ Open issues found during testing. Each bug includes the affected area, descripti
 
 ## Open Bugs
 
+### BUG-003 — Preview/document "X" button navigates to wizard instead of dashboard
+
+**Affected plan:** Plan 4.5 (Auth Flow & Document Management)
+**Severity:** Medium — broken navigation flow
+
+**What happens:**
+On the "Your Letter Is Ready" screen (preview or document page), clicking the X / close button takes the user back to the wizard (`/wizard`) instead of to their dashboard (`/dashboard`). This is the same navigation issue as BUG-002 but on a different button — the `?from=dashboard` query param fix only applied to the browser back button / link, not the X close button.
+
+**Proposed fix:**
+- Find the X / close button on the preview and document pages
+- Check for the `from=dashboard` query param (or similar) and route accordingly
+- Default destination should be `/dashboard` for logged-in users, `/wizard` for anonymous users
+
+---
+
+### BUG-004 — Google OAuth login blocked with "org_internal" error
+
+**Affected plan:** Plan 1 (Foundation)
+**Severity:** High — blocks Google sign-in for all external users
+
+**What happens:**
+When a user clicks "Continue with Google" on the login or signup page, Google shows: "Access blocked: Petty Lawsuits can only be used within its organization" (Error 403: org_internal).
+
+**Root cause:**
+The Google Cloud OAuth consent screen is set to "Internal" (only allows users within the Google Workspace organisation). It needs to be switched to "External" so any Google account can sign in.
+
+**Fix (manual, not code):**
+1. Go to Google Cloud Console → APIs & Services → OAuth consent screen
+2. Change User type from "Internal" to "External"
+3. Submit for verification if required (or add test users during development)
+
+---
+
+## Resolved Bugs
+
 ### BUG-001 — Wizard "Start Over" discards user input; drafts show as "Ready" not "Draft"
 
 **Affected plan:** Plan 2 (Wizard & Generation)
 **Severity:** Medium — poor UX, data loss
+**Status:** RESOLVED (2026-04-06)
 
-**What happens:**
-Pressing "Start Over" in the wizard clears all inputted text with no way to recover it. There is currently no concept of a saved draft — if a user loses their session or restarts, everything is gone.
+**What happened:**
+Pressing "Start Over" in the wizard cleared all inputted text with no way to recover it. Documents that had been saved but not yet unlocked/paid displayed "Ready" instead of "Draft" on the My Documents page.
 
-Additionally, documents that have been saved but not yet unlocked/paid display a status of "Ready" in the My Documents page when they should display "Draft" (since the letter hasn't been finalised or paid for).
-
-**Proposed fix:**
-- Add a **Save Draft** button to the wizard, visible only to signed-in users. This persists the current wizard form state (defendant, claimant, incident, evidence fields) to Supabase against the user's account with a `draft` status.
-- When a signed-in user presses "Start Over", prompt them first: *"Save as draft before starting over?"*
-- On the My Documents page, documents in an incomplete/unpaid state should display status `Draft`, not `Ready`.
-- Draft documents should be resumable — clicking a draft in My Documents should reload the wizard pre-filled with the saved data.
-
-**Note:** This feature should be gated to signed-in users only. Guests who haven't created an account cannot save drafts.
+**Fix:** Status label fix shipped in `ba96695`. Save Draft feature built: Save Draft button in wizard (signed-in users only), "Save before starting over?" confirmation dialog, draft API route (`/api/documents/draft`), and draft resume from dashboard via `/wizard?draft={id}`.
 
 ---
 
@@ -30,20 +58,9 @@ Additionally, documents that have been saved but not yet unlocked/paid display a
 
 **Affected plan:** Plan 4.5 (Auth Flow & Document Management)
 **Severity:** Medium — broken navigation flow
+**Status:** RESOLVED in `ba96695` (2026-04-06)
 
-**What happens:**
-When a user opens a letter from the My Documents page and lands on the "Your Letter Is Ready" screen, clicking the back/exit button (or using browser back) navigates to the wizard (`/wizard`) instead of returning to My Documents (`/dashboard` or `/documents`).
+**What happened:**
+When a user opened a letter from the My Documents page, clicking back navigated to the wizard (`/wizard`) instead of returning to My Documents.
 
-**Expected behaviour:**
-Exiting or navigating back from the letter-ready screen should always return the user to My Documents when they arrived there from My Documents.
-
-**Proposed fix:**
-- Pass a `?from=documents` query parameter (or similar) when navigating to the letter-ready screen from My Documents.
-- On the letter-ready page, check the `from` param and set the back/exit destination accordingly: if `from=documents`, go to `/dashboard`; otherwise default to `/wizard`.
-- Alternatively, use Next.js router history or a `returnTo` pattern consistent with the existing auth redirect logic in Plan 4.5.
-
----
-
-## Resolved Bugs
-
-*(None yet)*
+**Fix:** Back navigation from preview/document pages now correctly returns to the dashboard.

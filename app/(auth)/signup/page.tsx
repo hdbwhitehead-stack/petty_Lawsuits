@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation'
 function SignupForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [tosAccepted, setTosAccepted] = useState(false)
+  const [tosError, setTosError] = useState(false)
   const [error, setError] = useState('')
   const supabase = createClient()
   const router = useRouter()
@@ -16,6 +18,11 @@ function SignupForm() {
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
+    if (!tosAccepted) {
+      setTosError(true)
+      return
+    }
+    setTosError(false)
     const anonKey = getAnonKey()
 
     // Build the callback URL so Supabase sends the user back to their document
@@ -27,7 +34,10 @@ function SignupForm() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo },
+      options: {
+        emailRedirectTo,
+        data: { tos_accepted_at: new Date().toISOString() },
+      },
     })
     if (error) { setError(error.message); return }
     router.push('/verify')
@@ -85,6 +95,45 @@ function SignupForm() {
               required
             />
           </div>
+          <div>
+            <div className="flex items-start gap-3">
+              <input
+                id="tos"
+                type="checkbox"
+                checked={tosAccepted}
+                onChange={e => {
+                  setTosAccepted(e.target.checked)
+                  if (e.target.checked) setTosError(false)
+                }}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--accent)] cursor-pointer"
+              />
+              <label htmlFor="tos" className="text-sm text-[var(--muted)] cursor-pointer leading-snug">
+                I agree to the{' '}
+                <a
+                  href="/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--foreground)] underline"
+                >
+                  Terms of Service
+                </a>
+                {' '}and{' '}
+                <a
+                  href="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--foreground)] underline"
+                >
+                  Privacy Policy
+                </a>
+              </label>
+            </div>
+            {tosError && (
+              <p className="mt-2 text-sm text-red-600">
+                You must agree to the Terms of Service to create an account.
+              </p>
+            )}
+          </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button
             type="submit"
@@ -117,7 +166,7 @@ function SignupForm() {
           Already have an account?{' '}
           <a
             href={documentId ? `/login?returnTo=/preview/${documentId}` : '/login'}
-            className="text-[var(--accent)] hover:underline"
+            className="text-[var(--accent)] underline"
           >
             Log in
           </a>
