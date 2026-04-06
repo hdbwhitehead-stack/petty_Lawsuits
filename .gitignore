@@ -40,4 +40,5 @@ test-results/
 # Misc
 *.pem
 .claude/worktrees/
+.claude/settings.local.json
 .firecrawl/
