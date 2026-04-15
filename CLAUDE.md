@@ -50,7 +50,9 @@ Save Draft feature built: Save Draft button in wizard (signed-in users only), "S
 - Task 6 (partial): Lawyer must review and approve Privacy Policy, Terms of Service, and next-steps blurbs in `lib/documents/next-steps.ts`
 - Task 7: Production environment setup (Stripe live keys, production Supabase URL, webhook config, smoke test)
 
-**Open bugs:** BUG-003 (preview X button navigates to wizard instead of dashboard), BUG-004 (Google OAuth consent screen set to Internal — needs switching to External in Google Cloud Console)
+**Open bugs:** BUG-004 (Google OAuth consent screen set to Internal — needs switching to External in Google Cloud Console)
+
+**Fixed bugs:** BUG-003 (preview X button) — `components/payment/UnlockModal.tsx` now routes authenticated users to `/dashboard` and anonymous users to `/` regardless of entry point.
 
 **Vercel environment variables still needed:**
 The following env vars must be added to Vercel project settings before production launch. Some use placeholders or `!` non-null assertions that will fail at runtime if missing:
