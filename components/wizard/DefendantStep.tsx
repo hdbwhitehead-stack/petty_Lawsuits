@@ -187,7 +187,11 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
 
       <button
         onClick={onNext}
-        disabled={!answers.defendant_first_name || !answers.defendant_last_name}
+        disabled={
+          type === 'business'
+            ? !answers.defendant_business_name
+            : !answers.defendant_first_name || !answers.defendant_last_name
+        }
         className="bg-[var(--foreground)] text-white rounded-full px-8 py-3 text-base font-medium disabled:opacity-50 hover:opacity-90 transition-opacity"
       >
         Lock In The Defendant &rarr;

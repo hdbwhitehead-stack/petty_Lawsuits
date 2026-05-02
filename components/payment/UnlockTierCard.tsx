@@ -22,14 +22,26 @@ export default function UnlockTierCard({ name, price, features, tierType, docume
         body: JSON.stringify({ documentId, type: tierType }),
       })
 
+      const text = await res.text()
+      let data: { url?: string; error?: string } = {}
+      try { data = JSON.parse(text) } catch { /* non-JSON response */ }
+
       if (!res.ok) {
-        const data = await res.json()
-        alert(data.error || 'Checkout failed')
+        console.error('Checkout failed', { status: res.status, body: text })
+        alert(data.error || `Checkout failed (HTTP ${res.status}). Check the browser console.`)
         return
       }
 
-      const { url } = await res.json()
-      window.location.href = url
+      if (!data.url) {
+        console.error('Checkout succeeded but returned no URL', text)
+        alert('Checkout response missing a redirect URL — Stripe env vars likely not set.')
+        return
+      }
+
+      window.location.href = data.url
+    } catch (err) {
+      console.error('Checkout request threw', err)
+      alert('Could not reach checkout. Check the browser console.')
     } finally {
       setLoading(false)
     }

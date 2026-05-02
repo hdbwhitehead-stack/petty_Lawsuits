@@ -50,8 +50,16 @@ export default async function PreviewPage({ params, searchParams }: Props) {
   const content = doc.current_content as Record<string, string> ?? {}
   const redacted = redactContent(content, template.fields)
 
-  const recipientName =
-    content.debtor_name ?? content.business_name ?? content.landlord_name ?? 'the recipient'
+  const isPlaceholder = (v: string | undefined): boolean =>
+    !v || /^\[INSERT .+\]$/i.test(v.trim())
+  const pickName = (...candidates: (string | undefined)[]): string =>
+    candidates.find(c => !isPlaceholder(c)) ?? 'the recipient'
+  const recipientName = pickName(
+    content.debtor_name,
+    content.business_name,
+    content.landlord_name,
+    content.recipient_name,
+  )
 
   const paymentSuccess = searchParams.payment === 'success'
 
