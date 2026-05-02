@@ -30,7 +30,8 @@
       "WebFetch(domain:consumer.gov.au)",
       "WebFetch(domain:thelawproject.com.au)",
       "WebFetch(domain:www.legalchoice.com.au)",
-      "WebFetch(domain:www.nsw.gov.au)"
+      "WebFetch(domain:www.nsw.gov.au)",
+      "WebFetch(domain:www.legalvision.com.au)"
     ]
   }
 }

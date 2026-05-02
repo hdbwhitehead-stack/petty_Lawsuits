@@ -1,28 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700;800&family=DM+Sans:wght@400;500;700&family=Caveat:wght@500;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
-
 :root {
-  --background: #FAFAF8;
-  --foreground: #1A1A1A;
-  --accent: #906540;
-  --accent-dark: #704D2F;
-  --accent-light: #F5EDE6;
-  --accent-tint: #FBF5F0;
-  --muted: #6B6B6B;
-  --border: #E5E5E3;
+  /* Paper & ink */
+  --background: #FFF8E7;
+  --foreground: #1A1814;
   --card: #FFFFFF;
+  --paper-alt: #FCEFC7;
+  --paper-line: oklch(94% 0.02 90);
+  --muted: #5A5550;
+  --muted-2: #85807A;
+  --border: oklch(86% 0.02 80);
+
+  /* Accents */
+  --accent: #E85D2C;
+  --accent-dark: #B8421C;
+  --accent-tint: #FDE2D3;
+  --lemon: #FFD93D;
+  --lemon-tint: #FFF1A8;
+  --pink: #FF8FA3;
+  --pink-tint: #FFE0E6;
+  --sky: #7DC4E8;
+  --sky-tint: #D6EEFB;
+  --grass: #7FB069;
+  --grass-tint: #E1F0D5;
+  --stamp: #C9302C;
+
+  /* Type */
+  --font-display: 'Fraunces', serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-marker: 'Caveat', cursive;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Sticker shadow */
+  --shadow-sticker: 3px 3px 0 var(--foreground);
+  --shadow-sticker-lg: 5px 5px 0 var(--foreground);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-body);
 }
 
-/* Instrument Serif reserved for brand logo only — applied via inline class */
+.paper-lines {
+  background-image: repeating-linear-gradient(
+    to bottom, transparent 0, transparent 31px, var(--paper-line) 32px
+  );
+}
 
 @layer utilities {
   .text-balance {

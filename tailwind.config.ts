@@ -9,8 +9,36 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        card: 'var(--card)',
+        muted: 'var(--muted)',
+        border: 'var(--border)',
+        accent: 'var(--accent)',
+        'accent-dark': 'var(--accent-dark)',
+        'accent-tint': 'var(--accent-tint)',
+        lemon: 'var(--lemon)',
+        'lemon-tint': 'var(--lemon-tint)',
+        pink: 'var(--pink)',
+        'pink-tint': 'var(--pink-tint)',
+        sky: 'var(--sky)',
+        'sky-tint': 'var(--sky-tint)',
+        grass: 'var(--grass)',
+        'grass-tint': 'var(--grass-tint)',
+        stamp: 'var(--stamp)',
+      },
+      fontFamily: {
+        display: ['Fraunces', 'serif'],
+        body: ['DM Sans', 'sans-serif'],
+        marker: ['Caveat', 'cursive'],
+        mono: ['JetBrains Mono', 'monospace'],
+      },
+      boxShadow: {
+        sticker: '3px 3px 0 #1A1814',
+        'sticker-lg': '5px 5px 0 #1A1814',
+      },
+      borderWidth: {
+        '2.5': '2.5px',
       },
     },
   },
