@@ -55,6 +55,22 @@ export const TEMPLATES: DocumentTemplate[] = [
       { key: 'vacated_date', label: 'Date you vacated', type: 'date' },
     ],
   },
+  {
+    id: 'cease-and-desist',
+    category: 'Cease & Desist',
+    label: 'Cease & Desist Letter',
+    description: 'Formally demand that someone stop a specified course of conduct.',
+    fields: [
+      { key: 'sender_name',       label: 'Your full name',                 type: 'text' },
+      { key: 'recipient_name',    label: 'Recipient full name',            type: 'text' },
+      { key: 'conduct_summary',   label: 'Conduct to cease (one line)',    type: 'text' },
+      { key: 'conduct_recital',   label: 'Description of the conduct',     type: 'textarea' },
+      { key: 'demand_paragraph',  label: 'The demand (cease and desist)',  type: 'textarea' },
+      { key: 'deadline_date',     label: 'Date by which conduct must stop', type: 'date' },
+      { key: 'consequences',      label: 'Consequences if not stopped',    type: 'textarea' },
+      { key: 'sender_signature',  label: 'Sender signature block',         type: 'text' },
+    ],
+  },
 ]
 
 export function getTemplate(id: string): DocumentTemplate | undefined {

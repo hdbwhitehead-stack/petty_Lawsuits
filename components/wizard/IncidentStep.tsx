@@ -26,19 +26,27 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
     onUpdate(updates)
   }, [answers.original_description, answers.description, onUpdate])
 
-  const hasRequired = answers.description && answers.claim_type && answers.incident_date && answers.location && answers.amount
+  const isCeaseAndDesist = answers.claim_type === 'cease-and-desist'
+
+  const hasRequired = isCeaseAndDesist
+    ? !!(answers.description && answers.claim_type && answers.incident_date && answers.location)
+    : !!(answers.description && answers.claim_type && answers.incident_date && answers.location && answers.amount)
 
   return (
     <div className="space-y-6">
       <div>
         <p className="text-sm font-medium text-[var(--accent)] mb-2">Step 3 of 4</p>
-        <h2 className="text-2xl">What happened?</h2>
+        <h2 className="text-2xl">
+          {isCeaseAndDesist ? 'What conduct do you want stopped?' : 'What happened?'}
+        </h2>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Describe the incident</label>
+        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
+          {isCeaseAndDesist ? 'Describe the conduct you want stopped' : 'Describe the incident'}
+        </label>
         <textarea
-          placeholder="Describe the incident..."
+          placeholder={isCeaseAndDesist ? 'Describe the conduct...' : 'Describe the incident...'}
           value={answers.description ?? ''}
           onChange={e => handleChange('description', e.target.value)}
           rows={5}
@@ -98,14 +106,36 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">How much are you claiming? (AUD)</label>
-        <input placeholder="e.g. 5000" value={answers.amount ?? ''}
-          onChange={e => handleChange('amount', e.target.value)}
-          className={inputClasses} type="text" inputMode="decimal" />
-      </div>
+      {!isCeaseAndDesist && (
+        <div>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">How much are you claiming? (AUD)</label>
+          <input placeholder="e.g. 5000" value={answers.amount ?? ''}
+            onChange={e => handleChange('amount', e.target.value)}
+            className={inputClasses} type="text" inputMode="decimal" />
+        </div>
+      )}
 
-      <CourtWidget location={answers.location ?? ''} amount={answers.amount ?? ''} disputeType={answers.claim_type} />
+      {isCeaseAndDesist && (
+        <div>
+          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
+            How many days should the recipient have to stop? <span className="text-[var(--muted)] font-normal">(optional — defaults to 14)</span>
+          </label>
+          <input
+            placeholder="e.g. 14"
+            value={answers.cease_deadline_days ?? ''}
+            onChange={e => handleChange('cease_deadline_days', e.target.value)}
+            className={inputClasses}
+            type="number"
+            inputMode="numeric"
+            min="1"
+            max="90"
+          />
+        </div>
+      )}
+
+      {!isCeaseAndDesist && (
+        <CourtWidget location={answers.location ?? ''} amount={answers.amount ?? ''} disputeType={answers.claim_type} />
+      )}
 
       {!hasRequired && (
         <p className="text-sm text-red-500">Please complete all fields above to continue.</p>

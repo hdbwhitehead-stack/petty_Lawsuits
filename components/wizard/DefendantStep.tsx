@@ -55,7 +55,11 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
     <div className="space-y-6">
       <div>
         <p className="text-sm font-medium text-[var(--accent)] mb-2">Step 1 of 4</p>
-        <h2 className="text-2xl">Who are you making a claim against?</h2>
+        <h2 className="text-2xl">
+          {answers.claim_type === 'cease-and-desist'
+            ? 'Who do you want to ask to stop?'
+            : 'Who are you making a claim against?'}
+        </h2>
       </div>
 
       <div className="flex gap-2">

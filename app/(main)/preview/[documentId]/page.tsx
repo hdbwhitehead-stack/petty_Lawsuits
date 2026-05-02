@@ -60,7 +60,7 @@ export default async function PreviewPage({ params, searchParams }: Props) {
       <PreviewShell content={redacted} fields={template.fields} category={doc.category} />
 
       <div className="max-w-2xl mx-auto mt-8 px-6">
-        <NextStepsPanel state={doc.state} disputeType={disputeType} />
+        <NextStepsPanel state={doc.state} disputeType={disputeType} category={doc.category} />
       </div>
 
       {paymentSuccess ? (

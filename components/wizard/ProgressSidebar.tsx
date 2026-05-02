@@ -1,7 +1,11 @@
 'use client'
 import Link from 'next/link'
 
-const STEPS = ['Defendant', 'Claimant', 'Incident', 'Evidence']
+const DEFAULT_STEPS = ['Defendant', 'Claimant', 'Incident', 'Evidence']
+
+const STEP_LABELS_BY_CATEGORY: Record<string, string[]> = {
+  'Cease & Desist': ['Who to ask', 'About you', 'What to stop', 'Evidence'],
+}
 
 type Props = {
   currentStep: number
@@ -10,6 +14,8 @@ type Props = {
 }
 
 export default function ProgressSidebar({ currentStep, answers, onStepClick }: Props) {
+  const category = answers.claim_type === 'cease-and-desist' ? 'Cease & Desist' : undefined
+  const STEPS = (category && STEP_LABELS_BY_CATEGORY[category]) ?? DEFAULT_STEPS
   const percent = Math.round((currentStep / 4) * 100)
 
   return (
