@@ -42,11 +42,11 @@ export default async function DocumentPage({ params }: Props) {
     <main className="max-w-3xl mx-auto py-10 px-6">
       <div className="mb-8">
         <a href="/dashboard" className="text-sm text-[var(--muted)] hover:text-[var(--accent)]">
-          ← Back to dashboard
+          ← Back to my cases
         </a>
         <h1 className="text-2xl font-bold mt-3 text-[var(--foreground)]">{template.label}</h1>
         <p className="text-[var(--muted)] text-sm mt-1">
-          Edit the fields below, then download your document.
+          Edit the fields below, then fire it off.
         </p>
       </div>
 

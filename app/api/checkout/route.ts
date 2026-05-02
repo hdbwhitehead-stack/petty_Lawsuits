@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     mode: type === 'subscription' ? 'subscription' : 'payment',
     currency: 'aud',
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/preview/${documentId}?payment=success`,
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/preview/${documentId}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/preview/${documentId}`,
     metadata: { documentId, userId: user.id, type },
     customer_email: user.email,

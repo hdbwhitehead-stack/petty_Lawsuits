@@ -32,7 +32,7 @@ export default function JurisdictionsPage() {
           <div className="p-4 text-sm font-medium text-right">Small Claims Limit</div>
           <div className="p-4 text-sm font-medium text-right">General Limit</div>
           <div className="p-4 text-sm font-medium">Typical Timeline</div>
-          <div className="p-4 text-sm font-medium text-center">Get Started</div>
+          <div className="p-4 text-sm font-medium text-center">Get petty</div>
         </div>
 
         {/* Rows */}

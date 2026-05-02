@@ -136,7 +136,7 @@ export default function PricingPage() {
                 : { border: '1px solid var(--border)', color: 'var(--foreground)' }
               }
             >
-              Get Started
+              Get petty
             </Link>
           </div>
         ))}

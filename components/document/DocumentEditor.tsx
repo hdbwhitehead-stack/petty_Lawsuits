@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { DocumentTemplate } from '@/lib/documents/templates'
 import { DocumentView } from './DocumentView'
+import { StickerButton } from '@/components/ui/StickerButton'
 
 type SaveStatus = 'saved' | 'saving' | 'unsaved' | 'error'
 
@@ -89,20 +90,24 @@ export function DocumentEditor({ documentId, template, currentContent, originalC
         onBlur={handleBlur}
       />
 
-      {/* Download buttons */}
+      {/* Export buttons */}
       <div className="flex items-center gap-3 mt-6">
-        <a
+        <StickerButton
+          as="a"
           href={`/api/documents/${documentId}/download?format=pdf`}
-          className="flex items-center gap-2 bg-[var(--accent)] text-white rounded px-4 py-2 text-sm font-medium hover:bg-[var(--accent-dark)] transition-colors"
+          variant="primary"
+          size="md"
         >
-          Download PDF
-        </a>
-        <a
+          Fire it off · PDF
+        </StickerButton>
+        <StickerButton
+          as="a"
           href={`/api/documents/${documentId}/download?format=word`}
-          className="flex items-center gap-2 border border-[var(--border)] text-[var(--foreground)] rounded px-4 py-2 text-sm font-medium hover:border-[var(--accent)] transition-colors"
+          variant="ink"
+          size="md"
         >
-          Download Word
-        </a>
+          Fire it off · Word
+        </StickerButton>
       </div>
     </div>
   )

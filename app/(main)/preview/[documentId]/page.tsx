@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { redactContent } from '@/lib/documents/redact'
 import { TEMPLATES } from '@/lib/documents/templates'
+import { getStripe } from '@/lib/stripe/client'
 import PreviewShell from '@/components/payment/PreviewShell'
 import UnlockModal from '@/components/payment/UnlockModal'
 import UnlockWatcher from './UnlockWatcher'
@@ -9,7 +10,7 @@ import NextStepsPanel from '@/components/document/NextStepsPanel'
 
 type Props = {
   params: { documentId: string }
-  searchParams: { payment?: string; from?: string }
+  searchParams: { payment?: string; from?: string; session_id?: string }
 }
 
 export default async function PreviewPage({ params, searchParams }: Props) {
@@ -43,6 +44,23 @@ export default async function PreviewPage({ params, searchParams }: Props) {
 
   if (doc.unlocked) {
     redirect(`/document/${doc.id}`)
+  }
+
+  // Stripe session fallback: verify payment server-side when session_id is present.
+  // Handles cases where the webhook hasn't fired yet (local dev, timing race).
+  if (searchParams.payment === 'success' && searchParams.session_id) {
+    try {
+      const stripeSession = await getStripe().checkout.sessions.retrieve(searchParams.session_id)
+      if (
+        stripeSession.payment_status === 'paid' &&
+        stripeSession.metadata?.documentId === params.documentId
+      ) {
+        await supabase.from('documents').update({ unlocked: true }).eq('id', params.documentId)
+        redirect(`/document/${params.documentId}`)
+      }
+    } catch {
+      // Stripe verification failed — fall through to UnlockWatcher polling
+    }
   }
 
   const template = TEMPLATES.find(t => t.category === doc.category) ?? TEMPLATES[0]

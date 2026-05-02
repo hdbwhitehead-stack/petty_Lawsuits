@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { StickerButton } from '@/components/ui/StickerButton'
 
 const STEPS = [
   {
@@ -91,12 +92,9 @@ export default function HowItWorksPage() {
       <div className="text-center mt-14 pt-10 border-t border-[var(--border)]">
         <h2 className="text-2xl md:text-3xl mb-3">Ready to try it?</h2>
         <p className="text-[var(--muted)] mb-6">The whole process takes about 5 minutes.</p>
-        <Link
-          href="/wizard"
-          className="inline-block bg-[var(--foreground)] text-white px-8 py-3.5 rounded-full text-base hover:opacity-90 transition-opacity"
-        >
-          Get Started
-        </Link>
+        <StickerButton as={Link} href="/wizard" variant="primary" size="md">
+          Sue someone
+        </StickerButton>
       </div>
     </main>
   )

@@ -315,7 +315,7 @@ export default function HomePage() {
                 size="md"
                 style={{ width: '100%', justifyContent: 'center' }}
               >
-                Get started
+                Get petty
               </StickerButton>
             </StickerCard>
 
@@ -357,7 +357,7 @@ export default function HomePage() {
                   size="md"
                   style={{ width: '100%', justifyContent: 'center' }}
                 >
-                  Get started
+                  Get petty
                 </StickerButton>
               </StickerCard>
             </div>

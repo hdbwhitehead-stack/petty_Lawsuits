@@ -62,7 +62,7 @@ export default function Header() {
                 href="/dashboard"
                 className="text-base text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
               >
-                My Documents
+                My Cases
               </Link>
               <Link
                 href="/account"
@@ -125,7 +125,7 @@ export default function Header() {
                 onClick={() => setOpen(false)}
                 className="block text-base text-[var(--muted)] hover:text-[var(--foreground)]"
               >
-                My Documents
+                My Cases
               </Link>
               <Link
                 href="/account"
