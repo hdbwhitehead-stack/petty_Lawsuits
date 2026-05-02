@@ -33,6 +33,29 @@ export async function sendDocumentReady(to: string, documentId: string) {
   })
 }
 
+export async function sendDeadlineReminder(
+  to: string,
+  documentId: string,
+  daysRemaining: number,
+) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pettylawsuits.com.au'
+  const documentUrl = `${appUrl}/document/${documentId}`
+  const dayWord = daysRemaining === 1 ? 'day' : 'days'
+
+  await getResend().emails.send({
+    from: FROM,
+    to,
+    subject: `Reminder: your response deadline is in ${daysRemaining} ${dayWord}`,
+    html: `
+      <p>This is a reminder that the response deadline on one of your documents is approaching — ${daysRemaining} ${dayWord} remaining.</p>
+      <p>If you have already received a response, you can log it from your document page.</p>
+      <p><a href="${documentUrl}">View your document</a></p>
+      <hr />
+      <p style="color: #666; font-size: 0.875rem;">${DISCLAIMER}</p>
+    `,
+  })
+}
+
 export async function sendUnlockFailure(to: string) {
   const supportEmail = 'support@pettylawsuits.com.au'
 

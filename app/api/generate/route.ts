@@ -80,6 +80,11 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Calculate response deadline: 14 days from now
+  const responseDeadline = new Date()
+  responseDeadline.setDate(responseDeadline.getDate() + 14)
+  const responseDeadlineDate = responseDeadline.toISOString().slice(0, 10)
+
   // Save generated content
   await supabase
     .from('documents')
@@ -87,6 +92,7 @@ export async function POST(req: NextRequest) {
       status: 'ready',
       original_content: content!,
       current_content: content!,
+      response_deadline: responseDeadlineDate,
     })
     .eq('id', doc.id)
 
