@@ -10,15 +10,16 @@ type Props = {
 
 export default function UnlockModal({ documentId, recipientName, isAuthenticated }: Props) {
   const router = useRouter()
+  const exitDestination = isAuthenticated ? '/dashboard' : '/'
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--card)] rounded-xl max-w-2xl w-full p-8 relative">
         {/* Close / go back */}
         <button
-          onClick={() => router.push('/dashboard')}
+          onClick={() => router.push(exitDestination)}
           className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--accent-light)] transition-colors"
-          aria-label="Close and return to dashboard"
+          aria-label="Close"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="6" x2="6" y2="18" />
@@ -99,10 +100,10 @@ export default function UnlockModal({ documentId, recipientName, isAuthenticated
               </button>
               <span className="text-[var(--border)]">|</span>
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push(exitDestination)}
                 className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] underline underline-offset-4 transition-colors"
               >
-                Back to My Documents
+                {isAuthenticated ? 'Back to My Documents' : 'Back to home'}
               </button>
             </div>
           </>
