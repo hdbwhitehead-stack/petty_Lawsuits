@@ -18,6 +18,45 @@ A web app for generating Australian legal documents (demand letters, tribunal fi
 ## Current status
 Last updated: 2026-05-02
 
+## Pre-launch checklist
+
+Single source of truth for everything that must happen before public launch. Items are also referenced in their originating Plan section below.
+
+**Vercel environment variables to add:**
+- [ ] `RESEND_API_KEY` — Resend email (build uses placeholder; emails won't send without real key)
+- [ ] `STRIPE_SECRET_KEY` — Stripe payments (checkout + billing portal fail without this)
+- [ ] `STRIPE_WEBHOOK_SECRET` — Stripe webhook signature verification
+- [ ] `STRIPE_SEND_PRICE_ID` — "Send the Letter" tier
+- [ ] `STRIPE_FULL_PETTY_PRICE_ID` — "Go Full Petty" tier
+- [ ] `STRIPE_SUBSCRIPTION_PRICE_ID` — subscription tier (not yet launched)
+- [ ] `SUPABASE_SERVICE_ROLE_KEY` — used by account deletion + cron handlers
+- [ ] `NEXT_PUBLIC_APP_URL` — base URL for email links (defaults to `https://pettylawsuits.com.au`)
+- [ ] `ABR_GUID` — free registration at https://abr.business.gov.au/Tools/WebServices. Without it, ABN lookup falls back to "enter manually" — non-blocking.
+- [ ] `CRON_SECRET` — long random string (`openssl rand -hex 32`). Without it, daily deadline-reminder cron returns 401 — no emails sent, otherwise harmless.
+
+**Lawyer review required (placeholder copy in code):**
+- [ ] Privacy Policy (`app/(main)/privacy/page.tsx`) — marked DRAFT
+- [ ] Terms of Service (`app/(main)/terms/page.tsx`) — marked DRAFT
+- [ ] Per-state next-steps blurbs in `lib/documents/next-steps.ts`
+- [ ] Cease & desist system prompt body in `lib/claude/prompts.ts` (the `'Cease & Desist'` branch)
+- [ ] `CEASE_AND_DESIST_NEXT_STEPS` blurb in `lib/documents/next-steps.ts`
+- [ ] Full design spec to skim: `docs/superpowers/specs/2026-05-02-cease-and-desist-letter-design.md`
+
+**Code follow-ups:**
+- [ ] Migration to persist evidence file refs: `ALTER TABLE documents ADD COLUMN evidence_files JSONB DEFAULT '[]'::jsonb` + write the metadata in `/api/generate` (currently files land in Storage but the doc row has no pointer to them).
+- [ ] BUG-004: Google OAuth consent screen set to Internal — switch to External in Google Cloud Console.
+
+**Configuration:**
+- [ ] Add `http://localhost:3000/auth/callback` and the production callback URL to Supabase Auth → Redirect URLs.
+
+**Smoke test on production once deployed:**
+- [ ] Walk a demand letter through end-to-end (wizard → preview → unlock → editor → PDF export).
+- [ ] Walk a cease & desist through end-to-end.
+- [ ] Visit `/jurisdictions/nsw` and `/tools/tribunal-fees` — confirm they render.
+- [ ] Trigger `/api/cron/deadline-reminders` manually with the right Bearer header — confirm it returns 200.
+
+---
+
 ### Plan 1 — Foundation: COMPLETE
 All scaffold files exist: Next.js app, Supabase client/server, auth pages (login/signup/verify), route middleware, DB migration, Playwright e2e test, Vercel config deployed.
 
@@ -54,16 +93,7 @@ Save Draft feature built: Save Draft button in wizard (signed-in users only), "S
 
 **Fixed bugs:** BUG-003 (preview X button) — `components/payment/UnlockModal.tsx` now routes authenticated users to `/dashboard` and anonymous users to `/` regardless of entry point.
 
-**Vercel environment variables still needed:**
-The following env vars must be added to Vercel project settings before production launch. Some use placeholders or `!` non-null assertions that will fail at runtime if missing:
-- `RESEND_API_KEY` — Resend email (build uses placeholder to avoid crash; emails won't send without real key)
-- `STRIPE_SECRET_KEY` — Stripe payments (checkout and billing portal will fail without this)
-- `STRIPE_WEBHOOK_SECRET` — Stripe webhook signature verification
-- `STRIPE_SEND_PRICE_ID` — Price ID for "Send the Letter" tier
-- `STRIPE_FULL_PETTY_PRICE_ID` — Price ID for "Go Full Petty" tier
-- `STRIPE_SUBSCRIPTION_PRICE_ID` — Price ID for subscription tier (not yet launched)
-- `SUPABASE_SERVICE_ROLE_KEY` — used by account deletion and seed script (server-side only)
-- `NEXT_PUBLIC_APP_URL` — base URL for email links (defaults to `https://pettylawsuits.com.au`)
+_(Pre-launch env-var checklist now lives at the top of this file under "Pre-launch checklist".)_
 
 ### Plan 6 — Competitive Features & Growth: HIGH-PRIORITY ITEMS COMPLETE
 Shipped via the multi-agent orchestration plan at `docs/superpowers/plans/2026-05-02-plan-6-orchestration.md` on branch `feat/plan-6-orchestration`. Plus BUG-003 fix (preview X button now routes to /dashboard).
@@ -79,13 +109,7 @@ Shipped via the multi-agent orchestration plan at `docs/superpowers/plans/2026-0
 
 **Database migration:** `supabase/migrations/002_plan6_features.sql` (applied) — adds `response_deadline`, `deadline_reminder_sent_at` columns + partial index, plus the `evidence` storage bucket with per-user RLS policies.
 
-**New env vars required for production:**
-- `ABR_GUID` — register free at https://abr.business.gov.au/Tools/WebServices (without it, ABN lookup degrades gracefully)
-- `CRON_SECRET` — long random string; Vercel injects into the cron Authorization header
-
-**Pre-launch follow-ups:**
-- Lawyer review of the cease & desist system prompt + next-steps blurb (both placeholders).
-- Follow-up migration to persist evidence file refs on `documents`.
+_(Plan 6 env vars and lawyer-review items are tracked in the "Pre-launch checklist" at the top of this file.)_
 
 **Medium priority (build if high-priority items move the needle):**
 - Claim amount calculator, statute of limitations checker
