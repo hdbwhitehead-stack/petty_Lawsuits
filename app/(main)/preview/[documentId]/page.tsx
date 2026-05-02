@@ -48,7 +48,10 @@ export default async function PreviewPage({ params, searchParams }: Props) {
 
   // Stripe session fallback: verify payment server-side when session_id is present.
   // Handles cases where the webhook hasn't fired yet (local dev, timing race).
+  // NOTE: redirect() must be called outside the try/catch — it throws NEXT_REDIRECT
+  // internally and a catch block would silently swallow it.
   if (searchParams.payment === 'success' && searchParams.session_id) {
+    let verified = false
     try {
       const stripeSession = await getStripe().checkout.sessions.retrieve(searchParams.session_id)
       if (
@@ -56,11 +59,12 @@ export default async function PreviewPage({ params, searchParams }: Props) {
         stripeSession.metadata?.documentId === params.documentId
       ) {
         await supabase.from('documents').update({ unlocked: true }).eq('id', params.documentId)
-        redirect(`/document/${params.documentId}`)
+        verified = true
       }
     } catch {
-      // Stripe verification failed — fall through to UnlockWatcher polling
+      // Stripe key not set or session not found — fall through to UnlockWatcher polling
     }
+    if (verified) redirect(`/document/${params.documentId}`)
   }
 
   const template = TEMPLATES.find(t => t.category === doc.category) ?? TEMPLATES[0]
