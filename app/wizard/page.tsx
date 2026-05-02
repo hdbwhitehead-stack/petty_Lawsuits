@@ -25,6 +25,7 @@ function WizardContent() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [showEvidenceAuthGate, setShowEvidenceAuthGate] = useState(false)
   const [savingDraft, setSavingDraft] = useState(false)
   const [draftToast, setDraftToast] = useState<'saved' | 'error' | null>(null)
   const [startOverState, setStartOverState] = useState<StartOverConfirm>('idle')
@@ -120,15 +121,43 @@ function WizardContent() {
     setLoading(true)
     setError(null)
 
-    // Upload evidence files to Supabase Storage
-    const evidenceFilenames: string[] = []
-    for (const file of files) {
-      const formData = new FormData()
-      formData.append('file', file)
-      // For MVP, we just track filenames — full upload integration comes later
-      evidenceFilenames.push(file.name)
+    // Evidence files metadata — populated after successful uploads
+    type EvidenceFileMeta = { path: string; filename: string; size: number; mime: string }
+    const evidenceFiles: EvidenceFileMeta[] = []
+
+    // Upload evidence files to Supabase Storage (authenticated users only)
+    // Path pattern: <user_id>/<document_id_placeholder>/<original_filename>
+    // A stable document_id isn't available until after generation, so we use a
+    // session-scoped upload folder keyed by timestamp and claim_type.
+    if (files.length > 0 && isLoggedIn) {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const uploadFolder = `${user.id}/${Date.now()}_${answers.claim_type ?? 'doc'}`
+        const uploads = files.map(async (file) => {
+          const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+          const path = `${uploadFolder}/${safeName}`
+          const { error: uploadError } = await supabase.storage
+            .from('evidence')
+            .upload(path, file, { upsert: true })
+          if (uploadError) {
+            console.error('Evidence upload failed for', file.name, uploadError.message)
+            return null
+          }
+          return { path, filename: file.name, size: file.size, mime: file.type } satisfies EvidenceFileMeta
+        })
+        const results = await Promise.all(uploads)
+        for (const r of results) {
+          if (r) evidenceFiles.push(r)
+        }
+      }
     }
 
+    // NOTE: evidenceFiles metadata is passed to /api/generate but the documents
+    // table does NOT yet have an evidence_files column to persist it.
+    // See report for migration recommendation. The data is included in the
+    // request body today and will be silently ignored server-side until the
+    // column is added.
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
@@ -136,7 +165,7 @@ function WizardContent() {
         body: JSON.stringify({
           templateId: answers.claim_type,
           wizardAnswers: answers,
-          evidenceFilenames,
+          evidenceFiles,
           anonymousKey: getOrCreateAnonKey(),
         }),
       })
@@ -153,7 +182,7 @@ function WizardContent() {
     } finally {
       setLoading(false)
     }
-  }, [answers, router])
+  }, [answers, router, isLoggedIn])
 
   return (
     <div className="flex min-h-screen bg-[var(--background)]">
@@ -191,7 +220,15 @@ function WizardContent() {
           <IncidentStep answers={answers} onUpdate={updateAnswers} onNext={() => setStep(3)} onBack={() => setStep(1)} />
         )}
         {step === 3 && (
-          <EvidenceStep answers={answers} onGenerate={handleGenerate} loading={loading} error={error} onBack={() => setStep(2)} />
+          <EvidenceStep
+            answers={answers}
+            onGenerate={handleGenerate}
+            loading={loading}
+            error={error}
+            onBack={() => setStep(2)}
+            isAuthenticated={isLoggedIn}
+            onAuthRequired={() => setShowEvidenceAuthGate(true)}
+          />
         )}
       </main>
 
@@ -205,6 +242,40 @@ function WizardContent() {
           }`}
         >
           {draftToast === 'saved' ? 'Draft saved' : 'Could not save draft — please try again'}
+        </div>
+      )}
+
+      {/* Evidence sign-up gate — shown when anonymous user tries to attach a file */}
+      {showEvidenceAuthGate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-[var(--background)] border border-[var(--border)] rounded-2xl p-8 max-w-sm w-full shadow-xl text-center">
+            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-2">Create a free account to attach files</h2>
+            <p className="text-sm text-[var(--muted)] mb-6">
+              Evidence uploads are available to signed-in users. Create a free account — it only takes a moment.
+            </p>
+            <div className="flex flex-col gap-2">
+              <a
+                href="/signup"
+                className="w-full bg-[var(--foreground)] text-white text-sm font-medium rounded-full px-5 py-2.5 hover:opacity-90 transition-opacity text-center"
+              >
+                Create free account
+              </a>
+              <a
+                href="/login"
+                className="w-full border border-[var(--border)] text-[var(--foreground)] text-sm font-medium rounded-full px-5 py-2.5 hover:border-[var(--accent)] transition-colors text-center"
+              >
+                Log in
+              </a>
+              <button
+                type="button"
+                onClick={() => setShowEvidenceAuthGate(false)}
+                className="w-full text-[var(--muted)] text-sm py-2 hover:text-[var(--foreground)] transition-colors"
+              >
+                Continue without files
+              </button>
+            </div>
+            <p className="text-xs text-[var(--muted)] mt-4">You can still generate your document without uploading evidence.</p>
+          </div>
         </div>
       )}
 
