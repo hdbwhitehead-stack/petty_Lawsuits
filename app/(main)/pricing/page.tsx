@@ -37,6 +37,39 @@ const COMPARE_FEATURES = [
   { feature: 'Follow-up letter template', send: false, full: true },
 ]
 
+const VS_ROWS = [
+  {
+    label: 'Typical cost',
+    petty: '$29 – $49 per document',
+    solicitor: '$300 – $800+ per letter',
+    diy: 'Free, but time-intensive',
+  },
+  {
+    label: 'Turnaround',
+    petty: 'Minutes',
+    solicitor: 'Days to weeks',
+    diy: 'Hours to days',
+  },
+  {
+    label: 'Australian-law specific',
+    petty: 'Yes — tailored to your state tribunal and legislation',
+    solicitor: 'Yes',
+    diy: 'Only if you research it yourself',
+  },
+  {
+    label: 'Ongoing support',
+    petty: 'Follow-up letter template included (Go Full Petty)',
+    solicitor: 'Yes, at hourly rates',
+    diy: 'None',
+  },
+  {
+    label: 'Document quality',
+    petty: 'Formal, structured, jurisdiction-aware',
+    solicitor: 'Professional',
+    diy: 'Varies — depends on your research',
+  },
+]
+
 const PRICING_FAQ = [
   {
     q: 'What happens after I pay?',
@@ -138,6 +171,40 @@ export default function PricingPage() {
         <span className="text-sm text-[var(--muted)] border border-[var(--border)] px-3 py-1.5 rounded-full">
           Coming soon
         </span>
+      </div>
+
+      {/* Us vs solicitor vs DIY */}
+      <div className="max-w-3xl mx-auto mt-16">
+        <h2 className="text-2xl md:text-3xl text-center mb-2">How we compare</h2>
+        <p className="text-center text-[var(--muted)] text-base mb-8">
+          Petty Lawsuits sits between expensive solicitors and the DIY approach — purpose-built for disputes that don&apos;t justify a lawyer&apos;s hourly rate.
+        </p>
+        <div className="border border-[var(--border)] rounded-lg bg-[var(--card)] overflow-hidden">
+          {/* Header row */}
+          <div className="grid grid-cols-4 border-b border-[var(--border)] bg-[var(--background)]">
+            <div className="p-4 text-sm font-medium text-[var(--muted)]"></div>
+            <div className="p-4 text-sm font-medium text-center" style={{ color: 'var(--accent)' }}>
+              Petty Lawsuits
+            </div>
+            <div className="p-4 text-sm font-medium text-center">Solicitor</div>
+            <div className="p-4 text-sm font-medium text-center">DIY</div>
+          </div>
+          {/* Data rows */}
+          {VS_ROWS.map((row, i) => (
+            <div
+              key={row.label}
+              className={`grid grid-cols-4 ${i < VS_ROWS.length - 1 ? 'border-b border-[var(--border)]' : ''}`}
+            >
+              <div className="p-4 text-sm font-medium text-[var(--foreground)]">{row.label}</div>
+              <div className="p-4 text-sm text-center text-[var(--muted)]">{row.petty}</div>
+              <div className="p-4 text-sm text-center text-[var(--muted)]">{row.solicitor}</div>
+              <div className="p-4 text-sm text-center text-[var(--muted)]">{row.diy}</div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-center text-[var(--muted)] mt-3">
+          Solicitor cost estimates are indicative only and vary widely by firm, matter complexity, and state. Petty Lawsuits is a document generation tool and does not provide legal advice.
+        </p>
       </div>
 
       {/* FAQ */}

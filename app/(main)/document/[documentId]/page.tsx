@@ -59,7 +59,7 @@ export default async function DocumentPage({ params }: Props) {
 
       {doc.state && (
         <div className="mt-10">
-          <NextStepsPanel state={doc.state} disputeType={template.id as DisputeType} />
+          <NextStepsPanel state={doc.state} disputeType={template.id as DisputeType} category={doc.category} />
         </div>
       )}
     </main>

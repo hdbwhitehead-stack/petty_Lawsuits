@@ -31,6 +31,37 @@ function formatDate(dateString: string) {
   })
 }
 
+function getDaysRemaining(deadlineDateString: string): number {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const deadline = new Date(deadlineDateString)
+  deadline.setHours(0, 0, 0, 0)
+  return Math.round((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+}
+
+function DeadlineBadge({ deadline }: { deadline: string }) {
+  const days = getDaysRemaining(deadline)
+  if (days < 0) {
+    return (
+      <span className="text-xs px-2.5 py-1 rounded-full border font-medium bg-gray-50 text-gray-500 border-gray-200">
+        Deadline passed
+      </span>
+    )
+  }
+  const urgent = days <= 2
+  return (
+    <span
+      className={`text-xs px-2.5 py-1 rounded-full border font-medium ${
+        urgent
+          ? 'bg-red-50 text-red-600 border-red-200'
+          : 'bg-amber-50 text-amber-700 border-amber-200'
+      }`}
+    >
+      {days === 0 ? 'Due today' : days === 1 ? '1 day left' : `${days} days left`}
+    </span>
+  )
+}
+
 export default async function DashboardPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -38,7 +69,7 @@ export default async function DashboardPage() {
 
   const { data: documents } = await supabase
     .from('documents')
-    .select('id, state, category, status, unlocked, created_at, current_content')
+    .select('id, state, category, status, unlocked, created_at, current_content, response_deadline')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
@@ -99,6 +130,9 @@ export default async function DashboardPage() {
                       <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/20 font-medium">
                         Unlocked
                       </span>
+                    )}
+                    {doc.response_deadline && doc.status === 'ready' && (
+                      <DeadlineBadge deadline={doc.response_deadline} />
                     )}
                     <span
                       className={`text-xs px-2.5 py-1 rounded-full border font-medium ${

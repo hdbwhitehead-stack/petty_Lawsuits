@@ -1,9 +1,11 @@
 import { getFormsForDispute, isStale, type CourtForm, type FormFormat } from '@/lib/documents/court-forms'
 import { getJurisdiction } from '@/lib/documents/jurisdiction'
+import { getNextSteps } from '@/lib/documents/next-steps'
 
 type Props = {
   state: string
   disputeType: string
+  category?: string
 }
 
 function formatBadge(format: FormFormat) {
@@ -21,7 +23,18 @@ function formatBadge(format: FormFormat) {
   )
 }
 
-export default function NextStepsPanel({ state, disputeType }: Props) {
+export default function NextStepsPanel({ state, disputeType, category }: Props) {
+  // Cease & desist letters don't escalate to a tribunal — show the C&D-specific blurb and hide court forms
+  if (category === 'Cease & Desist') {
+    const blurb = getNextSteps(state, category)
+    return (
+      <section className="border border-[var(--border)] rounded-lg p-6 md:p-8 bg-[var(--card)]">
+        <h2 className="text-xl md:text-2xl mb-1">If they don&rsquo;t stop</h2>
+        <p className="text-sm text-[var(--muted)] whitespace-pre-line">{blurb.trim()}</p>
+      </section>
+    )
+  }
+
   const forms = getFormsForDispute(state, disputeType)
   const jurisdiction = getJurisdiction(state, disputeType as Parameters<typeof getJurisdiction>[1])
 

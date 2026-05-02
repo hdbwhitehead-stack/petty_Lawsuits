@@ -15,4 +15,9 @@ export const EVIDENCE_REQUIREMENTS: Record<string, EvidenceItem[]> = {
     { key: 'invoice_or_agreement', label: 'Invoice or Written Agreement', required: true },
     { key: 'communication_records', label: 'Communication Records', required: true },
   ],
+  'cease-and-desist': [
+    { key: 'communication_records', label: 'Communication Records', required: true },
+    { key: 'offending_material', label: 'Screenshots or Copies of the Offending Material', required: true },
+    { key: 'prior_correspondence', label: 'Prior Correspondence Asking the Conduct to Stop', required: false },
+  ],
 }

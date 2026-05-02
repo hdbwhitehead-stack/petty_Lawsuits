@@ -11,6 +11,17 @@ export const NEXT_STEPS: Record<string, string> = {
   NT: 'If you wish to pursue this matter further, people in this situation sometimes make an application to the Local Court of the Northern Territory. You should seek independent legal advice if you are unsure about your rights. Free legal help is available through NAAJA (North Australian Aboriginal Justice Agency).',
 }
 
-export function getNextSteps(state: string): string {
-  return NEXT_STEPS[state] ?? 'If you wish to pursue this matter further, you should seek independent legal advice or contact your state legal aid office for guidance.'
+// PLACEHOLDER — awaiting lawyer review before launch.
+// Must be reviewed and approved by a qualified Australian lawyer before this doc type is exposed to public traffic.
+const CEASE_AND_DESIST_NEXT_STEPS = `
+If the recipient stops the specified conduct by the deadline, no further action is needed. If the conduct continues, people in this situation sometimes seek independent legal advice about further options, which may include applying for an injunction or commencing a civil claim. Free legal help is available through your state legal aid commission.
+
+This is not legal advice. The next steps that apply to your specific situation depend on the type of conduct and your jurisdiction.
+`
+
+const NEXT_STEPS_FALLBACK = 'If you wish to pursue this matter further, you should seek independent legal advice or contact your state legal aid office for guidance.'
+
+export function getNextSteps(state: string, category?: string): string {
+  if (category === 'Cease & Desist') return CEASE_AND_DESIST_NEXT_STEPS
+  return NEXT_STEPS[state] ?? NEXT_STEPS_FALLBACK
 }

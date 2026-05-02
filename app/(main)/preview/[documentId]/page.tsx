@@ -54,14 +54,13 @@ export default async function PreviewPage({ params, searchParams }: Props) {
     content.debtor_name ?? content.business_name ?? content.landlord_name ?? 'the recipient'
 
   const paymentSuccess = searchParams.payment === 'success'
-  const fromDashboard = searchParams.from === 'dashboard'
 
   return (
     <div className="relative min-h-screen bg-[var(--background)] py-10">
       <PreviewShell content={redacted} fields={template.fields} category={doc.category} />
 
       <div className="max-w-2xl mx-auto mt-8 px-6">
-        <NextStepsPanel state={doc.state} disputeType={disputeType} />
+        <NextStepsPanel state={doc.state} disputeType={disputeType} category={doc.category} />
       </div>
 
       {paymentSuccess ? (
@@ -71,7 +70,6 @@ export default async function PreviewPage({ params, searchParams }: Props) {
           documentId={doc.id}
           recipientName={recipientName}
           isAuthenticated={!!user}
-          from={fromDashboard ? 'dashboard' : undefined}
         />
       )}
     </div>

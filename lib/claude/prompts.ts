@@ -7,6 +7,38 @@ export function buildGenerationPrompt(
   wizardAnswers: Record<string, string>,
   evidenceFilenames: string[]
 ): string {
+  const answersText = Object.entries(wizardAnswers)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('\n')
+
+  const evidenceContext = evidenceFilenames.length > 0
+    ? `\nThe user has attached the following evidence files: ${evidenceFilenames.join(', ')}`
+    : ''
+
+  const fields = template.fields.map(f => `"${f.key}": "${f.label}"`).join('\n')
+
+  // Cease & desist letters are not filed with a tribunal — use a different prompt body
+  if (template.category === 'Cease & Desist') {
+    return `You are generating a formal Australian cease & desist letter sent under personal authority (not under a tribunal application). The recipient is being asked to stop a specified course of conduct. Do not reference any tribunal or court as the filing body. The letter is sent privately.
+
+User's situation details:
+${answersText}${evidenceContext}
+
+Generate values for each of the following document fields. Return ONLY a valid JSON object with these exact keys. Do not include any explanation, preamble, or markdown formatting — just the JSON object.
+
+Required fields:
+${fields}
+
+Rules:
+- Use formal, professional Australian English. The tone is firm but not threatening.
+- Frame demands in terms of stopping the conduct, not seeking damages or filing claims.
+- Where the user has provided a deadline (cease_deadline_days), use it; otherwise default to 14 days from today.
+- Where the user has not provided enough detail, use a placeholder like [INSERT X] rather than inventing facts.
+- The 'consequences' field should mention that the sender reserves the right to take further action (without naming a specific tribunal or claim type) and that they may seek independent legal advice.
+- Do not provide legal advice. Do not promise a specific legal outcome.
+- All fields must be present in your response`
+  }
+
   const location = wizardAnswers.location ?? ''
   const state = parseStateFromLocation(location) ?? 'Unknown'
   const jurisdiction = getJurisdiction(state, template.id as DisputeType)
@@ -16,14 +48,6 @@ export function buildGenerationPrompt(
     ? `$${jurisdiction.smallClaimsLimit.toLocaleString()} (small claims) / $${jurisdiction.generalLimit.toLocaleString()} (general limit)`
     : 'unknown'
   const jurisdictionNotes = jurisdiction?.notes ?? ''
-
-  const answersText = Object.entries(wizardAnswers)
-    .map(([k, v]) => `${k}: ${v}`)
-    .join('\n')
-
-  const evidenceContext = evidenceFilenames.length > 0
-    ? `\nThe user has attached the following evidence files: ${evidenceFilenames.join(', ')}`
-    : ''
 
   return `You are generating a formal Australian legal document of type: ${template.label}.
 
@@ -37,7 +61,7 @@ ${answersText}${evidenceContext}
 Generate values for each of the following document fields. Return ONLY a valid JSON object with these exact keys. Do not include any explanation, preamble, or markdown formatting — just the JSON object.
 
 Required fields:
-${template.fields.map(f => `"${f.key}": "${f.label}"`).join('\n')}
+${fields}
 
 Rules:
 - Use formal, professional Australian English

@@ -6,12 +6,11 @@ type Props = {
   documentId: string
   recipientName: string
   isAuthenticated: boolean
-  from?: string
 }
 
-export default function UnlockModal({ documentId, recipientName, isAuthenticated, from }: Props) {
+export default function UnlockModal({ documentId, recipientName, isAuthenticated }: Props) {
   const router = useRouter()
-  const exitDestination = from === 'dashboard' ? '/dashboard' : isAuthenticated ? '/dashboard' : '/'
+  const exitDestination = isAuthenticated ? '/dashboard' : '/'
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
