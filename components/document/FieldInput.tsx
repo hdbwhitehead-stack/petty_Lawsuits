@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import type { DocumentField } from '@/lib/documents/templates'
 
 type Props = {
@@ -10,17 +11,31 @@ type Props = {
 }
 
 export function FieldInput({ field, value, onChange, onBlur }: Props) {
-  const baseClass =
-    'border-b-2 border-[var(--accent)] bg-[var(--accent-tint)] px-1 py-0.5 min-w-[140px] focus:outline-none focus:bg-[var(--accent-light)] rounded-sm text-[var(--foreground)]'
+  const [focused, setFocused] = useState(false)
+
+  const style: React.CSSProperties = {
+    border: `2px solid ${focused ? 'var(--accent)' : 'var(--foreground)'}`,
+    borderRadius: 10,
+    background: 'var(--card)',
+    boxShadow: '3px 3px 0 var(--foreground)',
+    padding: '8px 12px',
+    fontFamily: 'var(--font-body)',
+    fontSize: 15,
+    color: 'var(--foreground)',
+    outline: 'none',
+    width: '100%',
+    transition: 'border-color 80ms ease',
+  }
 
   if (field.type === 'textarea') {
     return (
       <textarea
         value={value}
         onChange={e => onChange(field.key, e.target.value)}
-        onBlur={onBlur}
+        onFocus={() => setFocused(true)}
+        onBlur={() => { setFocused(false); onBlur?.() }}
         rows={4}
-        className={`${baseClass} w-full block resize-y`}
+        style={{ ...style, resize: 'vertical', display: 'block' }}
         aria-label={field.label}
       />
     )
@@ -31,8 +46,9 @@ export function FieldInput({ field, value, onChange, onBlur }: Props) {
       type={field.type === 'date' ? 'date' : 'text'}
       value={value}
       onChange={e => onChange(field.key, e.target.value)}
-      onBlur={onBlur}
-      className={baseClass}
+      onFocus={() => setFocused(true)}
+      onBlur={() => { setFocused(false); onBlur?.() }}
+      style={style}
       aria-label={field.label}
     />
   )

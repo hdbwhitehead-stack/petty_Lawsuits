@@ -31,6 +31,7 @@ export function StickerCard({
     <div
       className={className}
       style={{
+        position: 'relative',
         background: color,
         border: '2px solid var(--foreground)',
         borderRadius: 20,

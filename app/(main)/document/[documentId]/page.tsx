@@ -1,8 +1,10 @@
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { TEMPLATES } from '@/lib/documents/templates'
 import { DocumentEditor } from '@/components/document/DocumentEditor'
 import NextStepsPanel from '@/components/document/NextStepsPanel'
+import { StickerButton } from '@/components/ui/StickerButton'
 import type { DisputeType } from '@/lib/documents/jurisdiction'
 
 type Props = {
@@ -24,8 +26,10 @@ export default async function DocumentPage({ params }: Props) {
   if (!doc) {
     return (
       <main className="max-w-2xl mx-auto py-20 px-6 text-center">
-        <h1 className="text-2xl font-bold mb-4">Document not found</h1>
-        <a href="/dashboard" className="underline text-[var(--accent)]">Back to dashboard</a>
+        <h1 className="font-display font-extrabold text-3xl mb-6">Document not found</h1>
+        <StickerButton as={Link} href="/dashboard" variant="ghost" size="sm">
+          ← Back to my cases
+        </StickerButton>
       </main>
     )
   }
@@ -39,15 +43,13 @@ export default async function DocumentPage({ params }: Props) {
   const originalContent = (doc.original_content ?? {}) as Record<string, string>
 
   return (
-    <main className="max-w-3xl mx-auto py-10 px-6">
+    <main className="max-w-3xl mx-auto py-12 px-6">
       <div className="mb-8">
-        <a href="/dashboard" className="text-sm text-[var(--muted)] hover:text-[var(--accent)]">
+        <StickerButton as={Link} href="/dashboard" variant="ghost" size="sm">
           ← Back to my cases
-        </a>
-        <h1 className="text-2xl font-bold mt-3 text-[var(--foreground)]">{template.label}</h1>
-        <p className="text-[var(--muted)] text-sm mt-1">
-          Edit the fields below, then fire it off.
-        </p>
+        </StickerButton>
+        <h1 className="font-display font-extrabold text-3xl mt-5 mb-1">{template.label}</h1>
+        <p className="text-muted text-sm">Edit the fields below, then fire it off.</p>
       </div>
 
       <DocumentEditor
@@ -58,8 +60,12 @@ export default async function DocumentPage({ params }: Props) {
       />
 
       {doc.state && (
-        <div className="mt-10">
-          <NextStepsPanel state={doc.state} disputeType={template.id as DisputeType} category={doc.category} />
+        <div className="mt-12">
+          <NextStepsPanel
+            state={doc.state}
+            disputeType={template.id as DisputeType}
+            category={doc.category}
+          />
         </div>
       )}
     </main>

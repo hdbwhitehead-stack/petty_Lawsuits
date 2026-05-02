@@ -144,3 +144,7 @@ Next.js 14 (App Router), TypeScript, Tailwind CSS, Supabase, Claude API (claude-
 - Two developers (non-technical), building with Claude Code assistance
 - Target jurisdiction: Australia only
 - Do not offer legal advice anywhere in the codebase or UI copy
+
+## Design system
+
+Before creating or modifying any user-facing UI, read `docs/design/DESIGN_SYSTEM.md` end-to-end. Match the existing system — do not invent new tokens, components, or patterns without proposing the addition to §2/§3/§4 first.

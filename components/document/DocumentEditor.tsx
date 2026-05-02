@@ -34,7 +34,6 @@ export function DocumentEditor({ documentId, template, currentContent, originalC
     }
   }, [documentId])
 
-  // Auto-save every 30 seconds when there are unsaved changes
   useEffect(() => {
     if (saveStatus !== 'unsaved') return
     autoSaveTimer.current = setTimeout(() => save(values), 30_000)
@@ -61,24 +60,23 @@ export function DocumentEditor({ documentId, template, currentContent, originalC
   return (
     <div>
       {/* Toolbar */}
-      <div className="flex items-center justify-between mb-6">
+      <div
+        className="flex items-center justify-between mb-6 px-4 py-3 rounded-xl"
+        style={{ background: 'var(--paper-alt)', border: '1.5px solid rgba(26,24,20,0.2)' }}
+      >
+        <SaveStatusBadge status={saveStatus} />
         <div className="flex items-center gap-3">
-          <SaveStatusBadge status={saveStatus} />
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleRestoreOriginal}
-            className="text-sm text-[var(--muted)] border border-[var(--border)] rounded px-3 py-1.5 hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors"
-          >
+          <StickerButton onClick={handleRestoreOriginal} variant="ghost" size="sm">
             Restore original
-          </button>
-          <button
+          </StickerButton>
+          <StickerButton
             onClick={() => save(values)}
             disabled={saveStatus === 'saving' || saveStatus === 'saved'}
-            className="text-sm bg-[var(--foreground)] text-white rounded px-4 py-1.5 hover:opacity-80 transition-opacity disabled:opacity-40"
+            variant="lemon"
+            size="sm"
           >
             Save
-          </button>
+          </StickerButton>
         </div>
       </div>
 
@@ -91,7 +89,7 @@ export function DocumentEditor({ documentId, template, currentContent, originalC
       />
 
       {/* Export buttons */}
-      <div className="flex items-center gap-3 mt-6">
+      <div className="flex flex-wrap items-center gap-3 mt-6">
         <StickerButton
           as="a"
           href={`/api/documents/${documentId}/download?format=pdf`}
@@ -114,8 +112,14 @@ export function DocumentEditor({ documentId, template, currentContent, originalC
 }
 
 function SaveStatusBadge({ status }: { status: SaveStatus }) {
-  if (status === 'saving') return <span className="text-sm text-[var(--muted)]">Saving…</span>
-  if (status === 'saved') return <span className="text-sm text-[var(--muted)]">Saved</span>
-  if (status === 'error') return <span className="text-sm text-red-500">Save failed — try again</span>
-  return <span className="text-sm text-[var(--accent)]">Unsaved changes</span>
+  if (status === 'saving') {
+    return <span className="font-mono text-xs text-muted uppercase tracking-wider">Saving…</span>
+  }
+  if (status === 'saved') {
+    return <span className="font-mono text-xs text-grass uppercase tracking-wider">✓ Saved</span>
+  }
+  if (status === 'error') {
+    return <span className="font-mono text-xs text-stamp uppercase tracking-wider">Save failed — try again</span>
+  }
+  return <span className="font-mono text-xs text-accent uppercase tracking-wider">● Unsaved changes</span>
 }

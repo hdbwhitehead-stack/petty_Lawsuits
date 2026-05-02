@@ -13,6 +13,8 @@ const config: Config = {
         foreground: 'var(--foreground)',
         card: 'var(--card)',
         muted: 'var(--muted)',
+        'muted-2': 'var(--muted-2)',
+        'paper-alt': 'var(--paper-alt)',
         border: 'var(--border)',
         accent: 'var(--accent)',
         'accent-dark': 'var(--accent-dark)',

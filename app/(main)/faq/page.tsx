@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { StickerCard } from '@/components/ui/StickerCard'
 
 const FAQ_SECTIONS = [
   {
@@ -19,7 +20,7 @@ const FAQ_SECTIONS = [
       },
       {
         q: 'What types of documents can I create?',
-        a: 'Currently: debt recovery demand letters, consumer complaint letters (faulty goods/services), and bond dispute letters. We\'re adding neighbour disputes, employment, contracts, and court filings soon.',
+        a: "Currently: debt recovery demand letters, consumer complaint letters (faulty goods/services), and bond dispute letters. We're adding neighbour disputes, employment, contracts, and court filings soon.",
       },
     ],
   },
@@ -28,7 +29,7 @@ const FAQ_SECTIONS = [
     items: [
       {
         q: 'Do I need an account to start?',
-        a: 'No. You can complete the entire wizard without creating an account. You\'ll only need to sign up when you\'re ready to pay and unlock your document.',
+        a: "No. You can complete the entire wizard without creating an account. You'll only need to sign up when you're ready to pay and unlock your document.",
       },
       {
         q: 'How long does it take?',
@@ -48,7 +49,7 @@ const FAQ_SECTIONS = [
     title: 'Pricing & payments',
     items: [
       {
-        q: 'What\'s the difference between Send the Letter and Go Full Petty?',
+        q: "What's the difference between Send the Letter and Go Full Petty?",
         a: 'Send the Letter ($29) gives you the full document and PDF download. Go Full Petty ($49) adds Word download, in-browser editing, certified mail tracking, and a follow-up letter template.',
       },
       {
@@ -57,11 +58,11 @@ const FAQ_SECTIONS = [
       },
       {
         q: 'What if the document generation fails?',
-        a: 'You won\'t be charged for a failed generation. If generation fails three times, your document is flagged and our team will help you directly via email.',
+        a: "You won't be charged for a failed generation. If generation fails three times, your document is flagged and our team will help you directly via email.",
       },
       {
         q: 'Can I get a refund?',
-        a: 'If your document fails to generate after payment, we\'ll issue a full refund. For other issues, email us and we\'ll work it out.',
+        a: "If your document fails to generate after payment, we'll issue a full refund. For other issues, email us and we'll work it out.",
       },
     ],
   },
@@ -90,16 +91,17 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   return (
     <button
       onClick={() => setOpen(!open)}
-      className="w-full text-left border-b border-[var(--border)] py-4"
+      className="w-full text-left border-b py-4 transition-colors rounded hover:bg-[rgba(26,24,20,0.03)]"
+      style={{ borderColor: 'var(--border)' }}
     >
       <div className="flex items-start justify-between gap-4">
         <h3 className="text-base font-medium">{q}</h3>
-        <span className="text-[var(--muted)] text-lg flex-shrink-0 leading-none mt-0.5">
-          {open ? '\u2212' : '+'}
+        <span className="text-muted text-lg flex-shrink-0 leading-none mt-0.5">
+          {open ? '−' : '+'}
         </span>
       </div>
       {open && (
-        <p className="text-base text-[var(--muted)] leading-relaxed mt-3 pr-8">{a}</p>
+        <p className="text-base text-muted leading-relaxed mt-3 pr-8">{a}</p>
       )}
     </button>
   )
@@ -108,15 +110,24 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 export default function FAQPage() {
   return (
     <main className="max-w-3xl mx-auto px-6 py-20 md:py-24">
-      <h1 className="text-4xl md:text-5xl text-center mb-4">Frequently Asked Questions</h1>
-      <p className="text-center text-[var(--muted)] text-lg mb-12">
+      <h1 className="font-display font-bold text-4xl md:text-5xl text-center mb-4">
+        Frequently asked questions
+      </h1>
+      <p className="text-center text-muted text-lg mb-12">
         Everything you need to know about Petty Lawsuits.
       </p>
 
       <div className="space-y-10">
         {FAQ_SECTIONS.map(section => (
-          <section key={section.title} className="border border-[var(--border)] rounded-lg bg-[var(--card)] p-6 md:p-8">
-            <h2 className="text-xl mb-4">{section.title}</h2>
+          <section
+            key={section.title}
+            className="rounded-xl p-6 md:p-8"
+            style={{
+              border: '1.5px solid rgba(26,24,20,0.4)',
+              background: 'var(--paper-alt)',
+            }}
+          >
+            <h2 className="font-display font-bold text-xl mb-4">{section.title}</h2>
             <div>
               {section.items.map(item => (
                 <FAQItem key={item.q} q={item.q} a={item.a} />
@@ -125,6 +136,20 @@ export default function FAQPage() {
           </section>
         ))}
       </div>
+
+      <StickerCard color="var(--card)" rotate={0} padding="32px" className="mt-12 text-center">
+        <h3 className="font-display font-bold text-xl mb-2">Didn&apos;t find your answer?</h3>
+        <p className="text-base">
+          Email{' '}
+          <a
+            href="mailto:hello@pettylawsuits.com.au"
+            className="underline decoration-2 underline-offset-2"
+          >
+            hello@pettylawsuits.com.au
+          </a>{' '}
+          and we&apos;ll come back within a day.
+        </p>
+      </StickerCard>
     </main>
   )
 }
