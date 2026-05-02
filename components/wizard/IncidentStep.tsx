@@ -3,6 +3,8 @@ import { useCallback } from 'react'
 import { TEMPLATES } from '@/lib/documents/templates'
 import CourtWidget from './CourtWidget'
 import NarrativeEnhancer from './NarrativeEnhancer'
+import { StickerButton } from '@/components/ui/StickerButton'
+import { Highlight } from '@/components/ui/Highlight'
 
 type Props = {
   answers: Record<string, string>
@@ -11,7 +13,7 @@ type Props = {
   onBack?: () => void
 }
 
-const inputClasses = "w-full border border-[var(--border)] rounded-lg px-3 py-2.5 text-base bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+const inputClasses = "w-full border-2 border-[var(--foreground)] shadow-sticker rounded-lg px-3 py-2.5 text-base bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-1"
 
 export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Props) {
   function handleChange(key: string, value: string) {
@@ -34,16 +36,37 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm font-medium text-[var(--accent)] mb-2">Step 3 of 4</p>
-        <h2 className="text-2xl">
-          {isCeaseAndDesist ? 'What conduct do you want stopped?' : 'What happened?'}
-        </h2>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div
+            className="inline-flex items-center px-3 py-1 text-xs font-bold uppercase tracking-wider mb-3"
+            style={{
+              background: 'var(--accent)',
+              color: '#fff',
+              border: '2px solid var(--foreground)',
+              borderRadius: '999px',
+              boxShadow: '2px 2px 0 #1A1814',
+            }}
+          >
+            STEP 03 OF 04
+          </div>
+          <h2 className="text-2xl font-display font-extrabold">
+            {isCeaseAndDesist
+              ? <>What to <Highlight>stop</Highlight></>
+              : <>Spill the <Highlight>tea</Highlight></>}
+          </h2>
+        </div>
+        <p
+          className="text-base hidden sm:block flex-shrink-0 mt-8"
+          style={{ fontFamily: 'var(--font-marker)', color: 'var(--muted)' }}
+        >
+          going strong ✦
+        </p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
-          {isCeaseAndDesist ? 'Describe the conduct you want stopped' : 'Describe the incident'}
+        <label className="block text-sm font-medium mb-1">
+          {isCeaseAndDesist ? 'Describe the conduct you want stopped' : 'Describe what happened'}
         </label>
         <textarea
           placeholder={isCeaseAndDesist ? 'Describe the conduct...' : 'Describe the incident...'}
@@ -59,7 +82,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">What type of claim is this?</label>
+        <label className="block text-sm font-medium mb-1">What type of claim is this?</label>
         <select
           value={answers.claim_type ?? ''}
           onChange={e => handleChange('claim_type', e.target.value)}
@@ -73,7 +96,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">When did this happen?</label>
+        <label className="block text-sm font-medium mb-1">When did this happen?</label>
         <input type="date" value={answers.incident_date ?? ''}
           onChange={e => handleChange('incident_date', e.target.value)}
           className={inputClasses} />
@@ -81,7 +104,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">State / Territory</label>
+          <label className="block text-sm font-medium mb-1">State / Territory</label>
           <select
             value={answers.location ?? ''}
             onChange={e => handleChange('location', e.target.value)}
@@ -99,7 +122,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">City / Suburb</label>
+          <label className="block text-sm font-medium mb-1">City / Suburb</label>
           <input placeholder="e.g. Sydney" value={answers.city ?? ''}
             onChange={e => handleChange('city', e.target.value)}
             className={inputClasses} />
@@ -108,7 +131,7 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
 
       {!isCeaseAndDesist && (
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">How much are you claiming? (AUD)</label>
+          <label className="block text-sm font-medium mb-1">How much are you claiming? (AUD)</label>
           <input placeholder="e.g. 5000" value={answers.amount ?? ''}
             onChange={e => handleChange('amount', e.target.value)}
             className={inputClasses} type="text" inputMode="decimal" />
@@ -117,8 +140,8 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
 
       {isCeaseAndDesist && (
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
-            How many days should the recipient have to stop? <span className="text-[var(--muted)] font-normal">(optional — defaults to 14)</span>
+          <label className="block text-sm font-medium mb-1">
+            Days to stop? <span className="text-[var(--muted)] font-normal">(optional — defaults to 14)</span>
           </label>
           <input
             placeholder="e.g. 14"
@@ -142,18 +165,10 @@ export default function IncidentStep({ answers, onUpdate, onNext, onBack }: Prop
       )}
 
       <div className="flex gap-3">
-        {onBack && (
-          <button onClick={onBack} className="border border-[var(--foreground)] text-[var(--foreground)] rounded-full px-8 py-3 text-base font-medium hover:opacity-90 transition-opacity">
-            &larr; Back
-          </button>
-        )}
-        <button
-          onClick={onNext}
-          disabled={!hasRequired}
-          className="bg-[var(--foreground)] text-white rounded-full px-8 py-3 text-base font-medium disabled:opacity-50 hover:opacity-90 transition-opacity"
-        >
-          Add Your Evidence &rarr;
-        </button>
+        {onBack && <StickerButton onClick={onBack} variant="ghost">← Back</StickerButton>}
+        <StickerButton onClick={onNext} disabled={!hasRequired} variant="primary">
+          Add The Receipts · +100 XP
+        </StickerButton>
       </div>
     </div>
   )

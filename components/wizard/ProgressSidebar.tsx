@@ -1,11 +1,13 @@
 'use client'
 import Link from 'next/link'
+import { PettyMeter } from '@/components/ui/PettyMeter'
+import { Highlight } from '@/components/ui/Highlight'
 
-const DEFAULT_STEPS = ['Defendant', 'Claimant', 'Incident', 'Evidence']
-
+const DEFAULT_STEPS = ['The offender', 'About you', 'Spill the tea', 'The receipts']
 const STEP_LABELS_BY_CATEGORY: Record<string, string[]> = {
-  'Cease & Desist': ['Who to ask', 'About you', 'What to stop', 'Evidence'],
+  'Cease & Desist': ['Who to stop', 'About you', 'What to stop', 'The receipts'],
 }
+const STEP_XP = ['+50 XP', '+50 XP', '+100 XP', '+200 XP']
 
 type Props = {
   currentStep: number
@@ -16,84 +18,100 @@ type Props = {
 export default function ProgressSidebar({ currentStep, answers, onStepClick }: Props) {
   const category = answers.claim_type === 'cease-and-desist' ? 'Cease & Desist' : undefined
   const STEPS = (category && STEP_LABELS_BY_CATEGORY[category]) ?? DEFAULT_STEPS
-  const percent = Math.round((currentStep / 4) * 100)
+  const pettyValue = currentStep / 4
 
   return (
-    <aside className="w-64 border-r border-[var(--border)] bg-[var(--card)] hidden md:flex flex-col" style={{ minHeight: '100vh' }}>
-      {/* Logo strip */}
-      <div className="px-6 py-5 border-b border-[var(--border)]" style={{ borderTop: '3px solid var(--accent)' }}>
-        <Link href="/" className="font-['Instrument_Serif'] text-xl tracking-tight hover:opacity-80 transition-opacity">
-          Petty Lawsuits
+    <aside
+      className="w-64 hidden md:flex flex-col"
+      style={{ minHeight: '100vh', borderRight: '2px solid var(--foreground)', background: 'var(--card)' }}
+    >
+      {/* Logo */}
+      <div
+        className="px-6 py-5"
+        style={{ borderBottom: '2px solid var(--foreground)', borderTop: '3px solid var(--accent)' }}
+      >
+        <Link href="/" className="font-display font-extrabold text-xl tracking-tight hover:opacity-80 transition-opacity">
+          Petty <Highlight>Lawsuits</Highlight>
         </Link>
       </div>
 
-      {/* Progress content */}
-      <div className="px-6 py-6 flex-1">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--muted)] mb-4">Progress</p>
-
-        {/* Progress bar */}
-        <div className="w-full bg-[var(--accent-light)] rounded-full mb-1" style={{ height: '6px' }}>
-          <div
-            className="rounded-full transition-all duration-500"
-            style={{
-              width: `${percent}%`,
-              height: '6px',
-              background: 'var(--accent)',
-              boxShadow: percent > 0 ? '0 0 6px rgba(200, 149, 108, 0.5)' : 'none',
-            }}
-          />
+      <div className="px-6 py-6 flex-1 flex flex-col">
+        {/* Petty Meter */}
+        <div className="mb-6">
+          <PettyMeter value={pettyValue} label="Quest Progress" />
         </div>
-        <p className="text-xs text-[var(--muted)] text-right mb-6">{percent}%</p>
 
-        <ol className="space-y-3">
-          {STEPS.map((step, i) => (
-            <li
-              key={step}
-              onClick={() => i <= currentStep && onStepClick(i)}
-              className={`text-sm flex items-center gap-3 ${
-                i < currentStep
-                  ? 'text-[var(--accent)] cursor-pointer'
-                  : i === currentStep
-                  ? 'text-[var(--foreground)] font-semibold'
-                  : 'text-[var(--muted)]'
-              }`}
-            >
-              <span
-                className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-semibold flex-shrink-0 transition-all ${
-                  i < currentStep
-                    ? 'bg-[var(--accent)] text-white'
-                    : i === currentStep
-                    ? 'text-white'
-                    : 'bg-[var(--accent-light)] text-[var(--muted)]'
-                }`}
-                style={
-                  i === currentStep
-                    ? {
-                        background: 'var(--foreground)',
-                        boxShadow: '0 0 0 3px var(--accent-light)',
-                      }
-                    : {}
-                }
+        {/* Steps */}
+        <ol className="space-y-5 flex-1">
+          {STEPS.map((step, i) => {
+            const isDone = i < currentStep
+            const isCurrent = i === currentStep
+
+            return (
+              <li
+                key={step}
+                onClick={() => isDone && onStepClick(i)}
+                className={`flex items-start gap-3 ${isDone ? 'cursor-pointer' : ''}`}
               >
-                {i < currentStep ? '\u2713' : i + 1}
-              </span>
-              <span className={i < currentStep ? 'hover:underline underline-offset-2' : ''}>{step}</span>
-            </li>
-          ))}
+                <span
+                  className="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold flex-shrink-0 mt-0.5"
+                  style={{
+                    border: '2px solid var(--foreground)',
+                    boxShadow: isCurrent ? '2px 2px 0 #1A1814' : 'none',
+                    background: isDone ? 'var(--grass)' : isCurrent ? 'var(--accent)' : '#fff',
+                    color: isDone || isCurrent ? '#fff' : 'var(--muted)',
+                    transition: 'background 200ms ease',
+                  }}
+                >
+                  {isDone ? '✓' : i + 1}
+                </span>
+                <div>
+                  <p
+                    className="text-sm font-semibold"
+                    style={{ color: i > currentStep ? 'var(--muted)' : 'var(--foreground)' }}
+                  >
+                    {step}
+                  </p>
+                  <p
+                    className="text-xs mt-0.5"
+                    style={{
+                      fontFamily: 'var(--font-marker)',
+                      color: isDone ? 'var(--grass)' : isCurrent ? 'var(--accent)' : 'var(--muted)',
+                    }}
+                  >
+                    {isDone ? 'done ✓' : STEP_XP[i]}
+                  </p>
+                </div>
+              </li>
+            )
+          })}
         </ol>
 
-        {/* Summary */}
-        {(answers.defendant_first_name || answers.claimant_first_name || answers.amount) && (
-          <div className="mt-8 pt-6 border-t border-[var(--border)] space-y-2 text-sm text-[var(--muted)]">
+        {/* Auto-save post-it */}
+        <div
+          className="mt-6 px-4 py-3"
+          style={{
+            background: 'var(--lemon)',
+            border: '2px solid var(--foreground)',
+            borderRadius: 8,
+            boxShadow: '2px 2px 0 #1A1814',
+            transform: 'rotate(-0.5deg)',
+          }}
+        >
+          <p className="text-xs font-bold uppercase tracking-wide">Auto-save</p>
+          <p style={{ fontFamily: 'var(--font-marker)', fontSize: 13 }}>your progress is saved ✦</p>
+        </div>
+
+        {/* Case summary */}
+        {(answers.defendant_first_name || answers.amount) && (
+          <div
+            className="mt-4 pt-4 space-y-1 text-xs text-[var(--muted)]"
+            style={{ borderTop: '1px dashed var(--border)' }}
+          >
             {answers.defendant_first_name && (
-              <p>Defendant: {answers.defendant_first_name} {answers.defendant_last_name}</p>
+              <p>vs: {answers.defendant_first_name} {answers.defendant_last_name}</p>
             )}
-            {answers.claimant_first_name && (
-              <p>Claimant: {answers.claimant_first_name} {answers.claimant_last_name}</p>
-            )}
-            {answers.amount && (
-              <p>Amount: ${answers.amount}</p>
-            )}
+            {answers.amount && <p>claim: ${answers.amount}</p>}
           </div>
         )}
       </div>

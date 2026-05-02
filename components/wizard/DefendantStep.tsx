@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import { StickerButton } from '@/components/ui/StickerButton'
+import { Highlight } from '@/components/ui/Highlight'
 
 type Props = {
   answers: Record<string, string>
@@ -7,7 +9,7 @@ type Props = {
   onNext: () => void
 }
 
-const inputClasses = "w-full border border-[var(--border)] rounded-lg px-3 py-2.5 text-base bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+const inputClasses = "w-full border-2 border-[var(--foreground)] shadow-sticker rounded-lg px-3 py-2.5 text-base bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-1"
 
 type LookupState = 'idle' | 'loading' | 'success' | 'error'
 
@@ -39,7 +41,6 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
       } else if (data.businessName) {
         setLookupState('success')
         setLookupMessage(`Found: ${data.businessName}`)
-        // Prefill the business name field (remains editable)
         onUpdate({ defendant_business_name: data.businessName, defendant_abn: id })
       } else {
         setLookupState('error')
@@ -51,15 +52,34 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
     }
   }
 
+  const isCeaseAndDesist = answers.claim_type === 'cease-and-desist'
+
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm font-medium text-[var(--accent)] mb-2">Step 1 of 4</p>
-        <h2 className="text-2xl">
-          {answers.claim_type === 'cease-and-desist'
-            ? 'Who do you want to ask to stop?'
-            : 'Who are you making a claim against?'}
-        </h2>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div
+            className="inline-flex items-center px-3 py-1 text-xs font-bold uppercase tracking-wider mb-3"
+            style={{
+              background: 'var(--accent)',
+              color: '#fff',
+              border: '2px solid var(--foreground)',
+              borderRadius: '999px',
+              boxShadow: '2px 2px 0 #1A1814',
+            }}
+          >
+            STEP 01 OF 04
+          </div>
+          <h2 className="text-2xl font-display font-extrabold">
+            {isCeaseAndDesist ? <>Who to <Highlight>stop</Highlight></> : <>The <Highlight>offender</Highlight></>}
+          </h2>
+        </div>
+        <p
+          className="text-base hidden sm:block flex-shrink-0 mt-8"
+          style={{ fontFamily: 'var(--font-marker)', color: 'var(--muted)' }}
+        >
+          let&apos;s get this ✦
+        </p>
       </div>
 
       <div className="flex gap-2">
@@ -67,11 +87,15 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
           <button
             key={t}
             onClick={() => { setType(t); handleChange('defendant_type', t) }}
-            className={`px-5 py-2.5 rounded-full text-sm font-medium transition-opacity ${
-              type === t
-                ? 'bg-[var(--foreground)] text-white'
-                : 'border border-[var(--foreground)] text-[var(--foreground)]'
-            } hover:opacity-90`}
+            className="px-5 py-2.5 rounded-full text-sm font-bold"
+            style={{
+              border: '2px solid var(--foreground)',
+              boxShadow: type === t ? 'none' : '2px 2px 0 #1A1814',
+              background: type === t ? 'var(--foreground)' : '#fff',
+              color: type === t ? '#fff' : 'var(--foreground)',
+              transform: type === t ? 'translate(2px, 2px)' : undefined,
+              transition: 'all 80ms ease',
+            }}
           >
             {t === 'individual' ? 'Individual' : 'Business'}
           </button>
@@ -80,9 +104,8 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
 
       {type === 'business' && (
         <>
-          {/* ABN / ACN lookup — optional, prefills business name */}
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-sm font-medium mb-1">
               ABN / ACN <span className="text-[var(--muted)] font-normal">(optional — auto-fills business name)</span>
             </label>
             <div className="flex gap-2">
@@ -99,14 +122,15 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
                 inputMode="numeric"
                 maxLength={14}
               />
-              <button
-                type="button"
+              <StickerButton
+                variant="ghost"
+                size="sm"
                 onClick={handleAbnLookup}
                 disabled={!isValidAbnOrAcn(abnInput) || lookupState === 'loading'}
-                className="shrink-0 px-4 py-2.5 rounded-lg border border-[var(--foreground)] text-sm font-medium disabled:opacity-40 hover:opacity-80 transition-opacity whitespace-nowrap"
+                style={{ flexShrink: 0, borderRadius: 8, whiteSpace: 'nowrap' }}
               >
-                {lookupState === 'loading' ? 'Looking up…' : 'Look up'}
-              </button>
+                {lookupState === 'loading' ? 'Looking…' : 'Look up'}
+              </StickerButton>
             </div>
             {lookupMessage && (
               <p className={`mt-1.5 text-sm ${lookupState === 'success' ? 'text-green-600' : 'text-[var(--muted)]'}`}>
@@ -116,7 +140,7 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Business name</label>
+            <label className="block text-sm font-medium mb-1">Business name</label>
             <input
               placeholder="Business name"
               value={answers.defendant_business_name ?? ''}
@@ -129,13 +153,13 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">First name</label>
+          <label className="block text-sm font-medium mb-1">First name</label>
           <input placeholder="First name" value={answers.defendant_first_name ?? ''}
             onChange={e => handleChange('defendant_first_name', e.target.value)}
             className={inputClasses} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Last name</label>
+          <label className="block text-sm font-medium mb-1">Last name</label>
           <input placeholder="Last name" value={answers.defendant_last_name ?? ''}
             onChange={e => handleChange('defendant_last_name', e.target.value)}
             className={inputClasses} />
@@ -144,13 +168,13 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Email (optional)</label>
+          <label className="block text-sm font-medium mb-1">Email (optional)</label>
           <input placeholder="Email (optional)" value={answers.defendant_email ?? ''}
             onChange={e => handleChange('defendant_email', e.target.value)}
             className={inputClasses} type="email" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Phone (optional)</label>
+          <label className="block text-sm font-medium mb-1">Phone (optional)</label>
           <input placeholder="Phone (optional)" value={answers.defendant_phone ?? ''}
             onChange={e => handleChange('defendant_phone', e.target.value)}
             className={inputClasses} type="tel" />
@@ -158,7 +182,7 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Street address</label>
+        <label className="block text-sm font-medium mb-1">Street address</label>
         <input placeholder="Street address" value={answers.defendant_address ?? ''}
           onChange={e => handleChange('defendant_address', e.target.value)}
           className={inputClasses} />
@@ -166,36 +190,36 @@ export default function DefendantStep({ answers, onUpdate, onNext }: Props) {
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">City</label>
+          <label className="block text-sm font-medium mb-1">City</label>
           <input placeholder="City" value={answers.defendant_city ?? ''}
             onChange={e => handleChange('defendant_city', e.target.value)}
             className={inputClasses} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">State</label>
+          <label className="block text-sm font-medium mb-1">State</label>
           <input placeholder="State" value={answers.defendant_state ?? ''}
             onChange={e => handleChange('defendant_state', e.target.value)}
             className={inputClasses} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Postcode</label>
+          <label className="block text-sm font-medium mb-1">Postcode</label>
           <input placeholder="Postcode" value={answers.defendant_postcode ?? ''}
             onChange={e => handleChange('defendant_postcode', e.target.value)}
             className={inputClasses} />
         </div>
       </div>
 
-      <button
+      <StickerButton
         onClick={onNext}
         disabled={
           type === 'business'
             ? !answers.defendant_business_name
             : !answers.defendant_first_name || !answers.defendant_last_name
         }
-        className="bg-[var(--foreground)] text-white rounded-full px-8 py-3 text-base font-medium disabled:opacity-50 hover:opacity-90 transition-opacity"
+        variant="primary"
       >
-        Lock In The Defendant &rarr;
-      </button>
+        Lock In The Offender · +50 XP
+      </StickerButton>
     </div>
   )
 }

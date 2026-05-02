@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import { StickerButton } from '@/components/ui/StickerButton'
+import { StickerCard } from '@/components/ui/StickerCard'
 
 type Props = {
   name: string
@@ -24,7 +26,7 @@ export default function UnlockTierCard({ name, price, features, tierType, docume
 
       const text = await res.text()
       let data: { url?: string; error?: string } = {}
-      try { data = JSON.parse(text) } catch { /* non-JSON response */ }
+      try { data = JSON.parse(text) } catch { /* non-JSON */ }
 
       if (!res.ok) {
         console.error('Checkout failed', { status: res.status, body: text })
@@ -48,29 +50,50 @@ export default function UnlockTierCard({ name, price, features, tierType, docume
   }
 
   return (
-    <div className={`border rounded-lg p-6 flex flex-col ${highlight ? 'border-black ring-2 ring-black' : ''}`}>
-      <h3 className="text-lg font-bold">{name}</h3>
-      <p className="text-3xl font-bold mt-2">{price}</p>
-      <p className="text-sm text-gray-500 mb-4">one-time payment</p>
-
-      <ul className="space-y-2 mb-6 flex-1">
-        {features.map((f, i) => (
-          <li key={i} className="text-sm flex items-start gap-2">
-            <span className="text-green-600 mt-0.5">✓</span>
-            {f}
-          </li>
-        ))}
-      </ul>
-
-      <button
-        onClick={handleCheckout}
-        disabled={loading}
-        className={`w-full rounded px-4 py-3 font-medium disabled:opacity-50 ${
-          highlight ? 'bg-black text-white' : 'border border-black'
-        }`}
+    <div className="relative">
+      {highlight && (
+        <div
+          className="absolute -top-3 left-1/2 z-10 px-3 py-1 text-xs font-bold uppercase tracking-widest"
+          style={{
+            background: 'var(--lemon)',
+            border: '2px solid var(--foreground)',
+            borderRadius: 4,
+            boxShadow: '2px 2px 0 #1A1814',
+            transform: 'translateX(-50%) rotate(-1deg)',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          BEST VALUE
+        </div>
+      )}
+      <StickerCard
+        color={highlight ? 'var(--accent-tint)' : '#fff'}
+        shadow={highlight ? 'sticker-lg' : 'sticker'}
+        style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+        padding={24}
       >
-        {loading ? 'Redirecting...' : `Choose ${name}`}
-      </button>
+        <h3 className="text-lg font-bold">{name}</h3>
+        <p className="font-display font-extrabold text-4xl mt-2">{price}</p>
+        <p className="text-sm text-[var(--muted)] mb-5">one-time payment</p>
+
+        <ul className="space-y-2 mb-6 flex-1">
+          {features.map((f, i) => (
+            <li key={i} className="text-sm flex items-start gap-2">
+              <span style={{ color: 'var(--grass)', marginTop: 1 }}>✓</span>
+              {f}
+            </li>
+          ))}
+        </ul>
+
+        <StickerButton
+          onClick={handleCheckout}
+          disabled={loading}
+          variant={highlight ? 'primary' : 'ink'}
+          style={{ width: '100%', justifyContent: 'center' }}
+        >
+          {loading ? 'Redirecting…' : `Unlock & send it`}
+        </StickerButton>
+      </StickerCard>
     </div>
   )
 }

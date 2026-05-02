@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
+import { StickerButton } from '@/components/ui/StickerButton'
+import { Highlight } from '@/components/ui/Highlight'
 
 const NAV_LINKS = [
   { href: '/how-it-works', label: 'How It Works' },
@@ -11,6 +13,7 @@ const NAV_LINKS = [
   { href: '/pricing', label: 'Pricing' },
   { href: '/about', label: 'About' },
   { href: '/faq', label: 'FAQ' },
+  { href: '/wins', label: 'Wins ✦' },
 ]
 
 export default function Header() {
@@ -35,10 +38,10 @@ export default function Header() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--border)]">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)]/90 backdrop-blur-md border-b-2 border-[var(--foreground)]">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="font-['Instrument_Serif'] text-xl tracking-tight hover:opacity-80 transition-opacity">
-          Petty Lawsuits
+        <Link href="/" className="font-display font-extrabold text-xl tracking-tight hover:opacity-80 transition-opacity">
+          Petty <Highlight>Lawsuits</Highlight>
         </Link>
 
         {/* Desktop nav */}
@@ -82,15 +85,9 @@ export default function Header() {
               >
                 Log in
               </Link>
-              <Link
-                href="/wizard"
-                className="text-base text-white px-5 py-2 rounded-full transition-colors"
-                style={{ background: 'var(--accent)' }}
-                onMouseOver={e => (e.currentTarget.style.background = 'var(--accent-dark)')}
-                onMouseOut={e => (e.currentTarget.style.background = 'var(--accent)')}
-              >
-                Get Started
-              </Link>
+              <StickerButton as={Link} href="/wizard" variant="primary" size="sm">
+                Sue someone
+              </StickerButton>
             </>
           )}
         </nav>
@@ -109,7 +106,7 @@ export default function Header() {
 
       {/* Mobile menu */}
       {open && (
-        <nav className="md:hidden border-t border-[var(--border)] bg-[var(--background)] px-6 py-4 space-y-3">
+        <nav className="md:hidden border-t-2 border-[var(--foreground)] bg-[var(--background)] px-6 py-4 space-y-3">
           {NAV_LINKS.map(link => (
             <Link
               key={link.href}
@@ -153,14 +150,11 @@ export default function Header() {
               >
                 Log in
               </Link>
-              <Link
-                href="/wizard"
-                onClick={() => setOpen(false)}
-                className="block text-base text-white px-5 py-2.5 rounded-full text-center mt-4"
-                style={{ background: 'var(--accent)' }}
-              >
-                Get Started
-              </Link>
+              <div className="mt-4">
+                <StickerButton as={Link} href="/wizard" variant="primary" size="sm" onClick={() => setOpen(false)}>
+                  Sue someone
+                </StickerButton>
+              </div>
             </>
           )}
         </nav>

@@ -76,28 +76,40 @@ export function JurisdictionMap() {
   return (
     <div>
       <div className="flex flex-wrap justify-center gap-3">
-        {JURISDICTIONS.map(j => (
-          <button
-            key={j.code}
-            onClick={() => setSelected(selected === j.code ? null : j.code)}
-            className="border rounded-lg px-5 py-3 transition-colors text-left"
-            style={{
-              borderColor: selected === j.code ? 'var(--accent)' : 'var(--border)',
-              background: selected === j.code ? 'var(--accent-tint)' : 'var(--background)',
-            }}
-          >
-            <p className="font-bold text-base">{j.code}</p>
-            <p className="text-sm text-[var(--muted)]">{j.tribunal}</p>
-          </button>
-        ))}
+        {JURISDICTIONS.map(j => {
+          const isSelected = selected === j.code
+          return (
+            <button
+              key={j.code}
+              onClick={() => setSelected(isSelected ? null : j.code)}
+              className="rounded-lg px-5 py-3 text-left transition-transform active:translate-x-[2px] active:translate-y-[2px]"
+              style={{
+                border: '2px solid var(--foreground)',
+                boxShadow: isSelected ? 'none' : '3px 3px 0 #1A1814',
+                background: isSelected ? 'var(--accent)' : 'var(--background)',
+                color: isSelected ? '#fff' : 'inherit',
+                transform: isSelected ? 'translate(3px, 3px)' : undefined,
+                transition: 'transform 80ms ease, box-shadow 80ms ease, background 80ms ease',
+              }}
+            >
+              <p className="font-bold text-base">{j.code}</p>
+              <p className="text-sm" style={{ color: isSelected ? 'rgba(255,255,255,0.8)' : 'var(--muted)' }}>{j.tribunal}</p>
+            </button>
+          )
+        })}
       </div>
 
       {active && (
         <div
-          className="mt-6 mx-auto max-w-xl border rounded-lg p-6 text-left animate-in fade-in slide-in-from-bottom-2 duration-200"
-          style={{ borderColor: 'var(--accent)', background: 'var(--background)' }}
+          className="mt-6 mx-auto max-w-xl p-6 text-left animate-in fade-in slide-in-from-bottom-2 duration-200"
+          style={{
+            border: '2px solid var(--foreground)',
+            borderRadius: 20,
+            boxShadow: '4px 4px 0 #1A1814',
+            background: 'var(--background)',
+          }}
         >
-          <h3 className="text-lg font-medium mb-1">{active.name}</h3>
+          <h3 className="text-lg font-bold mb-1">{active.name}</h3>
           <p className="text-base text-[var(--muted)] leading-relaxed mb-4">{active.description}</p>
           <p className="text-sm">
             <span className="text-[var(--muted)]">Free legal help: </span>
@@ -105,7 +117,8 @@ export function JurisdictionMap() {
               href={active.legalAidUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[var(--accent)] font-medium underline underline-offset-2 hover:opacity-80 transition-opacity"
+              className="font-medium underline underline-offset-2 hover:opacity-80 transition-opacity"
+              style={{ color: 'var(--accent)' }}
             >
               {active.legalAidName}
             </a>

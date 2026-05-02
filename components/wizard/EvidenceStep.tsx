@@ -1,8 +1,10 @@
 'use client'
 import { useState, useCallback } from 'react'
 import { EVIDENCE_REQUIREMENTS } from '@/lib/documents/evidence-requirements'
+import { StickerButton } from '@/components/ui/StickerButton'
+import { Highlight } from '@/components/ui/Highlight'
 
-const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024 // 10 MB
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
 const ACCEPTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/heic', 'image/gif', 'image/webp', 'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 
 type Props = {
@@ -11,9 +13,7 @@ type Props = {
   loading: boolean
   error: string | null
   onBack?: () => void
-  /** Called when an anonymous user tries to attach a file — parent shows sign-up gate */
   onAuthRequired?: () => void
-  /** Whether the current user is authenticated */
   isAuthenticated: boolean
 }
 
@@ -46,26 +46,20 @@ export default function EvidenceStep({ answers, onGenerate, loading, error, onBa
   }
 
   function handleInteraction() {
-    if (!isAuthenticated) {
-      onAuthRequired?.()
-      return false
-    }
+    if (!isAuthenticated) { onAuthRequired?.(); return false }
     return true
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     if (!handleInteraction()) return
-    const dropped = Array.from(e.dataTransfer.files).slice(0, 10)
-    validateAndAddFiles(dropped)
+    validateAndAddFiles(Array.from(e.dataTransfer.files).slice(0, 10))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated])
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return
-    const selected = Array.from(e.target.files).slice(0, 10)
-    validateAndAddFiles(selected)
-    // reset input so same file can be re-added after removal
+    validateAndAddFiles(Array.from(e.target.files).slice(0, 10))
     e.target.value = ''
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated])
@@ -81,25 +75,52 @@ export default function EvidenceStep({ answers, onGenerate, loading, error, onBa
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm font-medium text-[var(--accent)] mb-2">Step 4 of 4</p>
-        <h2 className="text-2xl">Upload your evidence</h2>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div
+            className="inline-flex items-center px-3 py-1 text-xs font-bold uppercase tracking-wider mb-3"
+            style={{
+              background: 'var(--accent)',
+              color: '#fff',
+              border: '2px solid var(--foreground)',
+              borderRadius: '999px',
+              boxShadow: '2px 2px 0 #1A1814',
+            }}
+          >
+            STEP 04 OF 04
+          </div>
+          <h2 className="text-2xl font-display font-extrabold">
+            Show us the <Highlight>receipts</Highlight>
+          </h2>
+        </div>
+        <p
+          className="text-base hidden sm:block flex-shrink-0 mt-8"
+          style={{ fontFamily: 'var(--font-marker)', color: 'var(--muted)' }}
+        >
+          you&apos;re nearly there! ✦
+        </p>
       </div>
 
+      {/* Drop zone */}
       <div
         onDrop={handleDrop}
         onDragOver={e => e.preventDefault()}
-        className="border-2 border-dashed border-[var(--border)] rounded-lg p-8 text-center cursor-pointer hover:border-[var(--accent)] transition-colors bg-[var(--card)]"
         onClick={handleDropZoneClick}
+        className="rounded-lg p-8 text-center cursor-pointer"
+        style={{
+          border: '2px dashed var(--foreground)',
+          boxShadow: '3px 3px 0 #1A1814',
+          background: 'var(--lemon-tint)',
+        }}
       >
         {!isAuthenticated ? (
           <>
-            <p className="text-base text-[var(--foreground)]">Sign in to attach evidence files</p>
+            <p className="text-base font-bold">Sign in to attach evidence files</p>
             <p className="text-sm text-[var(--muted)] mt-1">Create a free account to upload photos, receipts, and PDFs</p>
           </>
         ) : (
           <>
-            <p className="text-base text-[var(--foreground)]">Drag &amp; drop files here, or click to browse</p>
+            <p className="text-base font-bold">Drag &amp; drop files here, or click to browse</p>
             <p className="text-sm text-[var(--muted)] mt-1">PDF, PNG, JPG, HEIC, DOCX — max 10 MB per file, 10 files total</p>
           </>
         )}
@@ -116,33 +137,38 @@ export default function EvidenceStep({ answers, onGenerate, loading, error, onBa
 
       {fileErrors.length > 0 && (
         <ul className="space-y-1">
-          {fileErrors.map((msg, i) => (
-            <li key={i} className="text-sm text-red-600">{msg}</li>
-          ))}
+          {fileErrors.map((msg, i) => <li key={i} className="text-sm text-red-600">{msg}</li>)}
         </ul>
       )}
 
       {files.length > 0 && (
         <ul className="space-y-2">
           {files.map((f, i) => (
-            <li key={i} className="flex items-center justify-between border border-[var(--border)] rounded-lg px-4 py-2.5 bg-[var(--card)]">
-              <span className="text-sm text-[var(--foreground)] truncate">{f.name} ({(f.size / 1024 / 1024).toFixed(1)} MB)</span>
-              <button onClick={() => removeFile(i)} className="text-red-500 text-sm ml-2 hover:underline">Remove</button>
+            <li
+              key={i}
+              className="flex items-center justify-between rounded-lg px-4 py-2.5"
+              style={{ border: '2px solid var(--foreground)', background: 'var(--card)', boxShadow: '2px 2px 0 #1A1814' }}
+            >
+              <span className="text-sm truncate">{f.name} ({(f.size / 1024 / 1024).toFixed(1)} MB)</span>
+              <button onClick={() => removeFile(i)} className="text-red-500 text-sm ml-2 hover:underline flex-shrink-0">Remove</button>
             </li>
           ))}
         </ul>
       )}
 
       {requirements.length > 0 && (
-        <div className="border border-[var(--border)] rounded-lg p-6 bg-[var(--card)]">
-          <h3 className="font-medium mb-3 text-base text-[var(--foreground)]">Evidence checklist for {claimType.replace(/-/g, ' ')}:</h3>
+        <div
+          className="rounded-lg p-5"
+          style={{ border: '2px solid var(--foreground)', background: 'var(--card)', boxShadow: '3px 3px 0 #1A1814' }}
+        >
+          <h3 className="font-bold mb-3 text-base">Evidence checklist for {claimType.replace(/-/g, ' ')}:</h3>
           <ul className="space-y-1.5">
             {requirements.map(req => (
               <li key={req.key} className="text-sm flex items-center gap-2">
-                <span className={req.required ? 'text-[var(--accent)]' : 'text-[var(--muted)]'}>
-                  {req.required ? '\u25CF' : '\u25CB'}
+                <span style={{ color: req.required ? 'var(--accent)' : 'var(--muted)' }}>
+                  {req.required ? '●' : '○'}
                 </span>
-                <span className="text-[var(--foreground)]">{req.label}</span>
+                <span>{req.label}</span>
                 {req.required && <span className="text-xs text-[var(--muted)]">(required)</span>}
               </li>
             ))}
@@ -150,7 +176,7 @@ export default function EvidenceStep({ answers, onGenerate, loading, error, onBa
         </div>
       )}
 
-      <label className="flex items-center gap-2 text-sm text-[var(--foreground)]">
+      <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
           checked={skipEvidence}
@@ -164,17 +190,16 @@ export default function EvidenceStep({ answers, onGenerate, loading, error, onBa
 
       <div className="flex gap-3">
         {onBack && (
-          <button onClick={onBack} disabled={loading} className="border border-[var(--foreground)] text-[var(--foreground)] rounded-full px-8 py-3 text-base font-medium disabled:opacity-50 hover:opacity-90 transition-opacity">
-            &larr; Back
-          </button>
+          <StickerButton onClick={onBack} disabled={loading} variant="ghost">← Back</StickerButton>
         )}
-        <button
+        <StickerButton
           onClick={() => onGenerate(files)}
           disabled={!hasAllRequired || loading}
-          className="bg-[var(--foreground)] text-white rounded-full px-8 py-3 text-base font-medium disabled:opacity-50 hover:opacity-90 transition-opacity"
+          variant="primary"
+          size="lg"
         >
-          {loading ? 'Generating your document...' : 'Generate Demand Letter'}
-        </button>
+          {loading ? 'Generating…' : 'Cite Their Nonsense · +200 XP'}
+        </StickerButton>
       </div>
     </div>
   )
