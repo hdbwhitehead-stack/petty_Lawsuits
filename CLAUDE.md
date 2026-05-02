@@ -16,7 +16,7 @@ A web app for generating Australian legal documents (demand letters, tribunal fi
 6. `plan-6-competitive-features.md` — competitive feature parity & growth (from pettylawsuit.com audit)
 
 ## Current status
-Last updated: 2026-04-06
+Last updated: 2026-05-02
 
 ### Plan 1 — Foundation: COMPLETE
 All scaffold files exist: Next.js app, Supabase client/server, auth pages (login/signup/verify), route middleware, DB migration, Playwright e2e test, Vercel config deployed.
@@ -63,17 +63,27 @@ The following env vars must be added to Vercel project settings before productio
 - `SUPABASE_SERVICE_ROLE_KEY` — used by account deletion and seed script (server-side only)
 - `NEXT_PUBLIC_APP_URL` — base URL for email links (defaults to `https://pettylawsuits.com.au`)
 
-### Plan 6 — Competitive Features & Growth: NOT STARTED
-Sourced from audit of pettylawsuit.com (US competitor). Full plan in `docs/plans/plan-6-competitive-features.md`. Priority order:
+### Plan 6 — Competitive Features & Growth: HIGH-PRIORITY ITEMS COMPLETE
+Shipped via the multi-agent orchestration plan at `docs/superpowers/plans/2026-05-02-plan-6-orchestration.md` on branch `feat/plan-6-orchestration`. Plus BUG-003 fix (preview X button now routes to /dashboard).
 
-**High priority (build these):**
-1. ABN/ACN business lookup in wizard (ASIC API, reduces defendant detail errors)
-2. Cease & desist letters (new document type, doubles addressable market)
-3. "Us vs solicitor vs DIY" comparison table on pricing page (quick win)
-4. Tribunal fees calculator (free SEO tool → wizard funnel)
-5. Response deadline tracking + email alerts (post-generation engagement)
-6. Evidence file upload in wizard (photos, receipts → Supabase Storage)
-7. Per-jurisdiction landing pages × 8 + all-jurisdictions reference table (SEO)
+**High priority — all complete:**
+1. ✅ ABN/ACN business lookup in wizard — `app/api/lookup/abn/route.ts` proxies the ABR JSON API; DefendantStep prefills business name. Requires `ABR_GUID` env var (free registration).
+2. ✅ Cease & desist letters — new template, category-aware prompt, custom next-steps blurb, court-forms hidden, wizard step relabels. **Pending lawyer review** — see `docs/superpowers/specs/2026-05-02-cease-and-desist-letter-design.md` (system prompt body and CEASE_AND_DESIST_NEXT_STEPS placeholder both need lawyer sign-off).
+3. ✅ "Us vs solicitor vs DIY" comparison table — added to `app/(main)/pricing/page.tsx`.
+4. ✅ Tribunal fees calculator — `app/(main)/tools/tribunal-fees/page.tsx` + `lib/jurisdictions/tribunal-fees.ts` (per-jurisdiction fee tiers, source URLs cited).
+5. ✅ Response deadline tracking + email alerts — `/api/generate` sets `response_deadline = today + 14 days`; dashboard shows badge; daily cron at `/api/cron/deadline-reminders` emails users 1–2 days out. Requires `CRON_SECRET` env var.
+6. ✅ Evidence file upload — wired into EvidenceStep + wizard parent; uploads to Supabase Storage `evidence` bucket (private, per-user RLS). Anonymous gate matches UnlockModal pattern. **Known gap:** evidence file refs are not yet persisted to the documents table — needs follow-up migration `ALTER TABLE documents ADD COLUMN evidence_files JSONB DEFAULT '[]'` and a `/api/generate` write of the metadata. Files DO land in Storage; only the DB pointer is missing.
+7. ✅ Per-jurisdiction landing pages × 8 + reference table — `app/(main)/jurisdictions/[slug]/page.tsx` (static via generateStaticParams) + `app/(main)/jurisdictions/page.tsx`.
+
+**Database migration:** `supabase/migrations/002_plan6_features.sql` (applied) — adds `response_deadline`, `deadline_reminder_sent_at` columns + partial index, plus the `evidence` storage bucket with per-user RLS policies.
+
+**New env vars required for production:**
+- `ABR_GUID` — register free at https://abr.business.gov.au/Tools/WebServices (without it, ABN lookup degrades gracefully)
+- `CRON_SECRET` — long random string; Vercel injects into the cron Authorization header
+
+**Pre-launch follow-ups:**
+- Lawyer review of the cease & desist system prompt + next-steps blurb (both placeholders).
+- Follow-up migration to persist evidence file refs on `documents`.
 
 **Medium priority (build if high-priority items move the needle):**
 - Claim amount calculator, statute of limitations checker
